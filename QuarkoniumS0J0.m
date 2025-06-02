@@ -41,8 +41,8 @@ if s==0 %Quarkonium
     E=zeros(1,kmax+1);
     %tol0=2e-7; %for sd hybrid
     %tol0=5e-6; %for s->s/d->d quarkonium x=62
-    %tol0=6e-7; %for d->s (bottom) x=90
-    tol0=2e-7;  %for d->s (charm) x=78
+    tol0=6e-7; %for d->s (bottom) x=90
+    %tol0=2e-7;  %for d->s (charm) x=78
     [EigvData,meshData]=computeEigenvalues(system,0,kmax*3,tol0);
 
     for k=0:kmax

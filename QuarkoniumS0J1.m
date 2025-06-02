@@ -37,7 +37,7 @@ kmax=4;
 if s==0 %Quarkonium
     %number of actual states
     E=zeros(1,kmax+1);
-    tol0=4.5e-8;
+    tol0=4.5e-8; %x=173
     [EigvData,meshData]=computeEigenvalues(system,0,kmax*3,tol0);
 
     for k=0:kmax
@@ -45,7 +45,7 @@ if s==0 %Quarkonium
         E(kindex)=EigvData.eigenvalues(3*kindex)/m;
     end
 else %Hybrid
-    tol1=1.9e-7;   %ajust this tolerance in function of the mesh
+    tol1=1.9e-7;   %ajust this tolerance in function of the mesh x=173
     [EigvData,meshData]=computeEigenvalues(system,0,kmax,tol1); 
     E=EigvData.eigenvalues/m;
 
