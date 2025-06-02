@@ -285,7 +285,7 @@ DeltaE = E(1);
 end
 
 
-% d->s
+% s->d
 function [I_if_square_cell, DeltaE, M] = StoDtrans(Nin, Nfin, Min, Mfin, length)
 
 k = length;
