@@ -124,6 +124,8 @@ else
          Op_d2=Op_d(:,:,2);
          [numR,numC] = size(Op_d1);
 
+         Op=zeros(numR,numC,3);
+
          Op(:,:,1)=diag(diag(Op_d1));
          Op(:,:,2)=diag(diag(Op_d2));
          Op(:,:,3)=zeros(numR,numC);
@@ -135,6 +137,9 @@ else
          Op_s=trans(x,Ei,Ef,M);   %single
          [numR,numC] = size(Op_s);
          Op_s=diag(diag(Op_s));
+
+         Op=zeros(numR,numC,3);
+
          Op(:,:,1)=Op_s;
          Op(:,:,2)=zeros(numR,numC);
          Op(:,:,3)=Op_s;
@@ -211,10 +216,10 @@ end
 %If we work with quarkonium the wave functions only have on relevant row:
 %the first one
 if sin==0 && sfin ==0
-    Yi_f=Yi(1,:); %row vector
-    Yi_c=Yi_f'; %column vector
+    Yi_f=Yi(1,:); %row vector inicial
+    Yi_c=Yi_f'; %column vector inicial
     
-    Yf_f=Yf(1,:); %row vector
+    Yf_f=Yf(1,:); %row vector fianl
 
     norm = Yf_f * Yi_c;
     
@@ -236,53 +241,43 @@ if sin==1 && sfin==0
     %If the final state is quarkonium, (should be) numRi=3 but we only
     %want the first one
         
-    V=zeros(numRi,1);
+    Vvector=zeros(numRi,1);
       
     for N=1:numRi
         %Muliply each row for any row of the other wavefunction normalized
         
-        Yi_f=Yi(N,:); %row vector
-        Yf_f=Yf(1,:); %row vector
+        Yi_f=Yi(N,:); %row vector inicial
+        Yi_c=Yi_f'; %column vector inicial
+
+        Yf_f=Yf(1,:); %row vector final
 
         %The operator Op in this case is three elements, one for the upper row and
         %one for the bottom row (in the case of double) and the third for
         %the case of single
         OpRow=Op(:,:,N);
 
+        %compute the norm for each row of the hibrid state
+        norm = Yf_f * Yi_c;
 
-%IMPORTANT: I HAVE TO REWRITE THIS AS THE ONE ABOVE FALTA DIVIDIR PER LA
-%NORMA
+        %sandwitch wave function with operator for each row of the hibrid
+        result = Yf_f * OpRow * Yi_c; 
 
+        Vvector(N,1) = result/norm; %store for each row
 
-        %With out wavefunctions computed now we multiply for our operator
-        %(matrix) Yf*Op*Yi
-        %Auxiliar matrix(vector) for the first multiplication. It is a row
-        %vector
-        V1=Yf_f*OpRow;
-        %Now our second multiplication is for each element in V1 and each
-        %element in Yi
-        V2=zeros(1,length(V1)); %row of zeros
-        for el=1:length(V1)
-           %Second auxiliar vector a row vector. Final multiplication of the
-           %Yf*Op*Yi
-           V2(el)=V1(el)*Yi_f(el);
-        end
-        %The integrand is exactly V2
-        I=V2;
-        %We obtain a column resulting of the sandwitch of
-        %wavefunctionQ*Op[N]*wavefunctionH[N]
+     end %end for
 
-        V(N,1)=trapz(x,I);  
-        
-    end %end for
+     %to get a unic value ignoring the NaN because of a function having the
+     %1st and 2nd or the last component 3 depending on whether they are
+     %(s/d) or p0 we do
 
-    %Then we should add the two results. But we do not do this here
+     %V=nansum(Vector)
+
+     V=Vvector;
     
 end %end if
 
 
 end %end function
-
 
 
 %VALOR DE LA MASSA
