@@ -218,11 +218,11 @@ E=Ef-Ei;
 Sq=sqrt(E^2-M^2);
 r=diag(x);
 %Aproximation
-Fds00=-(r^3*Sq^2)/(72*sqrt(5));
+%Fds00=-(r^3*Sq^2)/(72*sqrt(5));
 %Hole function
 A=diag(diag((1 ./ (r.^2 .* Sq.^3))));
 B = -(sqrt(5) / 2) * (6 * r .* Sq .* cos((Sq / 2) .* r) - 12 .* sin((Sq / 2) .* r) + r.^2 .* Sq^2 .* sinint((Sq / 2) .* r));
-%Fds00=A*B;
+Fds00=A*B;
 end
 
 %Fc (l=2,m=0 -> l=0,m=0)
@@ -234,12 +234,12 @@ E=Ef-Ei;
 Sq=sqrt(E^2-M^2);
 r=diag(x);
 %Aproximation
-FCds00= r/(3*sqrt(5)) - (r^3*Sq^2)/(84*sqrt(5));
+%FCds00= r/(3*sqrt(5)) - (r^3*Sq^2)/(84*sqrt(5));
 %Hole function
 A=diag(diag((1 ./ (r.^4 .* Sq.^5))));
 B = -2 * sqrt(5) * ( r .* Sq .* (-36 + r.^2 * Sq^2) .* cos((Sq / 2) .* r) ...
       - 8 * (-9 + r.^2 * Sq^2) .* sin((Sq / 2) .* r) );
-%FCds00=A*B;
+FCds00=A*B;
 end
 
 %FS (l=2,m=-2 -> l=0,m=0)
@@ -251,11 +251,11 @@ E=Ef-Ei;
 Sq=sqrt(E^2-M^2);
 r=diag(x);
 %Aproximation
-FSds20= sqrt(2/15)*r -(r^3*Sq^2)/(84*sqrt(30));
+%FSds20= sqrt(2/15)*r -(r^3*Sq^2)/(84*sqrt(30));
 %Hole function
-A=diag(diag((1 ./ (2 * r.^4 .* Sq.^5))));
-B = sqrt(15 / 2) * (2 * r .* Sq .* (24 + r.^2 .* Sq^2) .* cos((Sq / 2) .* r) + 4 .* (-24 + r.^2 .* Sq^2) .* sin((Sq / 2) .* r) + r.^4 .* Sq^4 .* sinint((Sq / 2) .* r));
-%FSds20=A*B;
+A=diag(diag((1 ./ (2 .* r.^4 .* Sq.^5))));
+B = sqrt(15 / 2) * (2 .* r .* Sq .* (24 + r.^2 .* Sq^2) .* cos((Sq / 2) .* r) + 4 .* (-24 + r.^2 .* Sq^2) .* sin((Sq / 2) .* r) + r.^4 .* Sq^4 .* sinint((Sq / 2) .* r));
+FSds20=A*B;
 end
 
 %FSX (l=2,m=2 -> l=0,m=0)
@@ -267,11 +267,11 @@ E=Ef-Ei;
 Sq=sqrt(E^2-M^2);
 r=diag(x);
 %Aproximation
-FSXds20= sqrt(2/15)*r -(r^3*Sq^2)/(84*sqrt(30));
+%FSXds20= sqrt(2/15)*r -(r^3*Sq^2)/(84*sqrt(30));
 %Hole function
 A=diag(diag((1 ./ (2 * r.^4 .* Sq.^5))));
 B = sqrt(15 / 2) * (2 * r .* Sq .* (24 + r.^2 .* Sq^2) .* cos((Sq / 2) .* r) + 4 .* (-24 + r.^2 .* Sq^2) .* sin((Sq / 2) .* r) + r.^4 .* Sq^4 .* sinint((Sq / 2) .* r));
-%FSXds20=A*B;
+FSXds20=A*B;
 end
 
 
