@@ -1,15 +1,19 @@
 
+% Programa per calcular les integrals dels factors de forma I_if com a
+% vectors en funcio de la dipion mass. Tambe les guarda com a .txt per
+% poder plotejar-les
+
 %Valor r0
 setr0(3.964)
 %massa
 load("dades.mat","m_c","m_b")
-setm_q(m_c)
+setm_q(m_b)
 
 %Change this depending on the transition
 
-ComputationIE = TransitionsAdded('QQDtoD');
+ComputationIE = TransitionsAdded('QQStoD');
 
-[I_if_square_cell, DeltaE, M] = ComputationIE(3, 1, 0.27, 0.8, 50);
+[I_if_square_cell, DeltaE, M] = ComputationIE(5, 1, 0.28, 0.73, 50);
 
 %Obtain the I_if^2 from the cell
 I_if_square = I_if_square_cell{1,1};
@@ -26,7 +30,7 @@ Itrans_0c=I_if_0c_square';
 Itrans_s=I_if_s_square';
 
 % The following code is to create .txt files where the variables are stored
-baseName = 'QQcharm_3d-1d_prova';
+baseName = 'QQbottom_5s-1d_expandit';
 folderPath = '/Users/sandra/Documents/Doctorat/Projectes PhD/Transicions a 2 pions/Lower order Lagrangian/TransitionData';
 
 fileName = fullfile(folderPath, sprintf('%s.txt', baseName));
