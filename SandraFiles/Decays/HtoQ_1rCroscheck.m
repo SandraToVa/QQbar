@@ -1,4 +1,7 @@
- %Code to check if for a transition from híbrid to quarkonium the value of
+%Code to compute the expected value of r, 1/r, 1/r^2 etc
+
+
+% One of its uses is to check if for a transition from híbrid to quarkonium the value of
  %<Psi_QQ| 1/r |Psi_HQ> with r = x in the code is >> than DeltaE of the QQ
  %and HQ states.
 
@@ -7,9 +10,9 @@
 
 setr0(3.964)
 load("dades.mat","m_c","m_b")
-setm_q(m_b)
+setm_q(m_c)
 
-%I will try 2 transitions 2(s/d)->1p and 2(s/d)->2p for bottomonium
+%I will try 2 transitions 1(s/d)->3s and 1(s/d)->2s for bottomonium
 % Initialize cell array to store variable-sized matrices
 wf_hq = cell(1, 1);         %for each cell there will be a matrix(wf made by diferent states at diferent x positions)
 wf_qq = cell(1, 2); 
@@ -17,7 +20,9 @@ xvector = cell(1, 2);
 
 E = zeros(2,2);
 Rvalues = zeros(1,2);
+R2values = zeros(1,2);
 DEvalues = zeros(1,2);
+DERvalues = zeros(1,2);
 
 
 %We compute the hibrid functions
@@ -26,9 +31,9 @@ setspin(1)
 %Hibrid states without the hiperfine:
 [aux,auxwf,x]=QuarkoniumS0J1(m_q,spin);
 % 1--
-E(1,1)=aux(3);
-E(1,2)=aux(3);
-wf_hq{1} = auxwf(1:2, :, 3);
+E(1,1)=aux(2);
+E(1,2)=aux(2);
+wf_hq{1} = auxwf(1, :, 1); %Primer element 1:2 si son (s/d) o (p/f)
 xvector{1}=x;
 
 %We compute the quarkonium functions
@@ -37,14 +42,14 @@ setspin(0)
 %Hibrid states without the hiperfine:
 [aux,auxwf,x]=QuarkoniumS0J1(m_q,spin);
 % 1--
-E(2,1)=aux(1);
-E(2,2)=aux(2);
-wf_qq{1} = auxwf(1, :, 1);
-wf_qq{2} = auxwf(1, :, 2);
+E(2,1)=aux(2);
+E(2,2)=aux(3);
+wf_qq{1} = auxwf(1, :, 2);
+wf_qq{2} = auxwf(1, :, 3);
 xvector{2}=x;
 
 
-%Asfter computing the quarkonium with same x we proceed
+%After computing the quarkonium with same x we proceed
 
 [sizeXhq,lengthXhq] = size(xvector{1});
 [sizeXqq,lengthXqq] = size(xvector{2});
@@ -64,20 +69,28 @@ end
 dim=2;
 %The matrix is the same for both transitions
 Rmatrix = compute1Rmatrix(xvector{1});
+R2matrix = compute2Rmatrix(xvector{1});
 %The value of the 1/r sandwitch
 Rvalues(1) = computeSandwitch(Rmatrix,wf_hq{1},wf_qq{1});
 Rvalues(2) = computeSandwitch(Rmatrix,wf_hq{1},wf_qq{2});
+%The value of the 1/r^2 sandwitch
+R2values(1) = computeSandwitch(R2matrix,wf_hq{1},wf_qq{1});
+R2values(2) = computeSandwitch(R2matrix,wf_hq{1},wf_qq{2});
 %Values of the diference of energy
 DEvalues(1) = E(2,1)-E(1,1);
 DEvalues(2) = E(2,2)-E(1,2);
+%Values of the diference of energy/r
+DERvalues(1) = DEvalues(1)*Rvalues(1);
+DERvalues(2) = DEvalues(2)*Rvalues(2);
+
 
 
 %The result should be the same as using with Op the Rmatirx 3 times
-Op=zeros(lengthXhq,lengthXhq,3);
-Op(:,:,1)=Rmatrix;
-Op(:,:,2)=Rmatrix;
-R2sdto1p=ExpectedValue(3,1,Op,@QuarkoniumS0J1,@QuarkoniumS0J1,m_q,1,0);
-R2sdto2p=ExpectedValue(3,2,Op,@QuarkoniumS0J1,@QuarkoniumS0J1,m_q,1,0);
+%Op=zeros(lengthXhq,lengthXhq,3);
+%Op(:,:,1)=Rmatrix;
+%Op(:,:,2)=Rmatrix;
+%R2sdto1p=ExpectedValue(3,1,Op,@QuarkoniumS0J1,@QuarkoniumS0J1,m_q,1,0);
+%R2sdto2p=ExpectedValue(3,2,Op,@QuarkoniumS0J1,@QuarkoniumS0J1,m_q,1,0);
 
 
 % Computes the 1/r matrix for diferent híbrid states
@@ -95,6 +108,21 @@ R2sdto2p=ExpectedValue(3,2,Op,@QuarkoniumS0J1,@QuarkoniumS0J1,m_q,1,0);
         Rvector(x_el,x_el) = 1 / x(x_el);
     end 
     Rmatrix = Rvector;
+ end
+
+function R2matrix=compute2Rmatrix(x)
+%Input:     dim = dimension of the rellevant! wf =1 for p_n and d_n states
+%                 and 2 for (s/d) and (p/f)
+%           x = array of meshpoints in where the matrix are computed
+
+%Output:    Rmatrix = matrix corresponding to 1/r that will be multiplied only for the
+%                       rellevant wf
+
+    Rvector = zeros(length(x),length(x));
+    for x_el=1:length(x)
+        Rvector(x_el,x_el) = 1 / x(x_el).^2;
+    end 
+    R2matrix = Rvector;
  end
 
  function Rvalue=computeSandwitch(Rmatrix,wf_hq,wf_qq)
