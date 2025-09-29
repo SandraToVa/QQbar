@@ -178,6 +178,12 @@ function r=potentialMatrix(x) % returns the potential matrix evaluated in x
 [s]=parameters3;
 
   for i=1:4 
+
+ %El (-2) és el que es factor comú en la eq (4) del paper
+  %Les matrius (8) i (10) son prporcionals a aquest -2Vhf
+  %Les matrius (9) i (11) son prporcionals a +2Vhf2 per tant en les
+  %expressions de les matrius hi ha un - extra que compensa al (-2)
+
   if s==1 % CAS HYBRIT QUARKONIUM P^(+,0,-)
     if j>=2 
       r(1,1,i)=F(x(i),j-1)+ (-2)*(+DD(x(i),j)+2*I5(x(i),j));
@@ -363,7 +369,7 @@ end
  function HF2=Vhf2(x) 
    % Control de l'efecte del 1r potencial
    if l==0 %interpolació
-       HF2=((k2*(x.^2)) - ( (x./r0).^5 * ( (1/2)*(r0./x)*Vsa + (1/2)*Vsb ) )) ./ (1+(x./r0).^7);
+       HF2= ((k2*(x.^2)) - ( (x./r0).^5 * ( (1/2)*(r0./x)*Vsa + (1/2)*Vsb ) )) ./ (1+(x./r0).^7);
    elseif l==1 %llargues distàncies
        hevi=heaviside(sym(x) - r0);
        HF2=-(1/2)*( Vsa*(r0^3/x.^3) + Vsb*(r0^2/x.^2) )*hevi;
@@ -372,84 +378,84 @@ end
    end
   end 
   
- function AA1=A1(x,j)
-  AA1=-Vhf2(x)*(((3+j)/(9+6*j)));
+  function AA1=A1(x,j)
+  AA1=Vhf2(x)*(((3+j)/(9+6*j)));
  end
    function AA3=A3(x,j)
-  AA3=Vhf2(x)*((sqrt((1+j)*(2+j)))/(3+2*j));
+  AA3=-Vhf2(x)*((sqrt((1+j)*(2+j)))/(3+2*j));
    end
    function AA5=A5(x,j)
-  AA5=-Vhf2(x)/(3+3*j);
+  AA5=Vhf2(x)/(3+3*j);
    end
    function AA7=A7(x,j)
-  AA7=-Vhf2(x)*(((2+j)^(3/2))/(sqrt(1+j)*(3+2*j)));
+  AA7=Vhf2(x)*(((2+j)^(3/2))/(sqrt(1+j)*(3+2*j)));
    end
    function AA9=A9(x,j)
-  AA9=Vhf2(x)*((j*(2+j))/(9+15*j+6*j^2));
+  AA9=-Vhf2(x)*((j*(2+j))/(9+15*j+6*j^2));
    end
    function BB4=B4(x,j)
-  BB4=-Vhf2(x)*((sqrt(j)*((2+j)^(3/2)))/(3*(1+j)*(1+2*j)));
+  BB4=Vhf2(x)*((sqrt(j)*((2+j)^(3/2)))/(3*(1+j)*(1+2*j)));
    end
    function BB6=B6(x,j)
-  BB6=Vhf2(x)*((j*sqrt(1+1/(1+j)))/(1+2*j));
+  BB6=-Vhf2(x)*((j*sqrt(1+1/(1+j)))/(1+2*j));
    end
    function BB8=B8(x,j)
-  BB8=Vhf2(x)*(j/(3*(j+1)))*(((2*j+3)/(2*j+1))^(1/2));
+  BB8=-Vhf2(x)*(j/(3*(j+1)))*(((2*j+3)/(2*j+1))^(1/2));
    end
    function DD2=D2(x,j)
-  DD2=Vhf2(x)*((sqrt(j*(2+j)))/(3+3*j));
+  DD2=-Vhf2(x)*((sqrt(j*(2+j)))/(3+3*j));
   end
    function DD4=D4(x,j)
-  DD4=Vhf2(x)*(j*(2+j))/(sqrt((1+j)*(2+j)*(1+2*j)*(3+2*j)));
+  DD4=-Vhf2(x)*(j*(2+j))/(sqrt((1+j)*(2+j)*(1+2*j)*(3+2*j)));
   end
   function DD6=D6(x,j)
-  DD6=-Vhf2(x)*(j^2)/(3*(1+j)*sqrt(3+4*j*(2+j)));
+  DD6=Vhf2(x)*(j^2)/(3*(1+j)*sqrt(3+4*j*(2+j)));
    end
    function EE1=E1(x,j)
-  EE1=-Vhf2(x)*(2+j)/(3+9*j+6*(j^2));
+  EE1=Vhf2(x)*(2+j)/(3+9*j+6*(j^2));
    end
    function EE3=E3(x,j)
-  EE3=Vhf2(x)*(sqrt(j/(1+j)))/(1+2*j);
+  EE3=-Vhf2(x)*(sqrt(j/(1+j)))/(1+2*j);
    end
    function EE5=E5(x,j)
-  EE5=-Vhf2(x)/(3*j*(1+j));
+  EE5=Vhf2(x)/(3*j*(1+j));
   end
    function EE7=E7(x,j)
-  EE7=-Vhf2(x)*(sqrt(1+1/j))/(1+2*j);
+  EE7=Vhf2(x)*(sqrt(1+1/j))/(1+2*j);
    end
   function EE9=E9(x,j)
-  EE9=-Vhf2(x)/(3*j)+Vhf2(x)/(1+2*j);
+  EE9=Vhf2(x)/(3*j)-Vhf2(x)/(1+2*j);
    end
    function FF4=F4(x,j)
-  FF4=-Vhf2(x)*((1+j)^2)/(3*j*(sqrt(4*(j^2)-1)));
+  FF4=Vhf2(x)*((1+j)^2)/(3*j*(sqrt(4*(j^2)-1)));
    end
    function FF6=F6(x,j)
-  FF6=Vhf2(x)*(j^2-1)/sqrt(j*(j-1)*(2*j-1)*(2*j+1));
+  FF6=-Vhf2(x)*(j^2-1)/sqrt(j*(j-1)*(2*j-1)*(2*j+1));
   end
    function FF8=F8(x,j)
-  FF8=Vhf2(x)*(sqrt(j^2-1))/(3*j);
+  FF8=-Vhf2(x)*(sqrt(j^2-1))/(3*j);
    end
    function GG2=G2(x,j)
-  GG2=Vhf2(x)*((1+j)*sqrt(1-2/(1+2*j)))/(3*j);
+  GG2=-Vhf2(x)*((1+j)*sqrt(1-2/(1+2*j)))/(3*j);
    end
    function GG4=G4(x,j)
-  GG4=Vhf2(x)*(sqrt((j-1)/j)*(1+j))/(1+2*j);
+  GG4=-Vhf2(x)*(sqrt((j-1)/j)*(1+j))/(1+2*j);
    end
    function GG6=G6(x,j)
-  GG6=-Vhf2(x)*(sqrt((j-1)/(j+1))*(j^2-1))/(3*j*(1+2*j));
+  GG6=Vhf2(x)*(sqrt((j-1)/(j+1))*(j^2-1))/(3*j*(1+2*j));
   end
    function II1=I1(x,j)
-  II1=Vhf2(x)*(1-j^2)/(3*j-6*j^2);
+  II1=-Vhf2(x)*(1-j^2)/(3*j-6*j^2);
    end
   function II3=I3(x,j)
-  II3=-Vhf2(x)*((j-1)^(3/2))/(sqrt(j)*(2*j-1));
+  II3=Vhf2(x)*((j-1)^(3/2))/(sqrt(j)*(2*j-1));
    end
    function II5=I5(x,j)
-  II5=Vhf2(x)/(3*j);
+  II5=-Vhf2(x)/(3*j);
    end
    function II7=I7(x,j)
-  II7=Vhf2(x)*sqrt((j-1)*j)/(2*j-1);
+  II7=-Vhf2(x)*sqrt((j-1)*j)/(2*j-1);
   end
    function II9=I9(x,j)
-  II9=Vhf2(x)*(2-j)/(-3+6*j);
+  II9=-Vhf2(x)*(2-j)/(-3+6*j);
   end
