@@ -1,10 +1,13 @@
 %Valor r0=3.964
 setr0(3.964)
-setL1(0.059)
-setL3(-0.230)
+%setL1(0.059)
+%setL3(-0.230)
+setL1(-0.059)
+setL3(-0.3105)
 load("dades.mat","m_c","m_b")
 setm_q(m_c)
 setspin(1)
+
 % l= interpolació (0), llagures distncies (1), bad long distances (2)
 setl(0)
 
@@ -18,7 +21,6 @@ t(1)=4.0296;
 t(2)=3.8976;
 t(3)=3.9286;
 t(4)=4.0746;
-
 t(5)=4.1106;
 t(6)=4.1756;
 t(7)=4.2386;
@@ -58,10 +60,10 @@ results(I1,I2)=0;
 
 chimax=1000000000;
 % Programa que busca la k òptima per a la chi^2
-for ka1=-0.096:0.0001:-0.094
+for ka1=-0.079:0.0001:-0.077
     setk1(ka1); 
     I2=1;
-    for ka2=0.001:0.0001:0.003
+    for ka2=0.014:0.0001:0.016
         setk2(ka2);
         chi=0;
         %Vector en los valors de la energia que necesito
