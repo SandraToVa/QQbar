@@ -9,11 +9,22 @@ setr0(3.964)
 load("dades.mat","m_c","m_b")
 setm_q(m_b)
 
+% Set value Q to know if we compute a QQ->QQ transitons or a HQ->QQ
+% transition
+Q = false;
+
 %Change this depending on the transition
 
-ComputationIE = TransitionsAdded('QQStoD');
+ComputationIE = TransitionsAdded('HQsdtS');
 
-[I_if_square_cell, DeltaE, M] = ComputationIE(5, 1, 0.28, 0.73, 50);
+[I_if_square_cell, DeltaE, M] = ComputationIE(1, 3, 0.28, 0.34, 50);
+
+baseName = 'HQbottom_1sd-3s';
+
+% This part is how to store the data depending on QQ or HQ transitions
+
+%%%%%%%%%%%%%%% For QQ->QQ transitons%%%%%%%%%%%%%%%%%%%%%%%%%
+if Q %If Q=true
 
 %Obtain the I_if^2 from the cell
 I_if_square = I_if_square_cell{1,1};
@@ -30,7 +41,7 @@ Itrans_0c=I_if_0c_square';
 Itrans_s=I_if_s_square';
 
 % The following code is to create .txt files where the variables are stored
-baseName = 'QQbottom_5s-1d_expandit';
+% The basename is the one mentioned above
 folderPath = '/Users/sandra/Documents/Doctorat/Projectes PhD/Transicions a 2 pions/Lower order Lagrangian/TransitionData';
 
 fileName = fullfile(folderPath, sprintf('%s.txt', baseName));
@@ -77,6 +88,43 @@ if any(I_if_s_square)
     fclose(file_s);
 end
 
+%%%%%%%%%%%%%%% For QQ->QQ transitons%%%%%%%%%%%%%%%%%%%%%%%%%
+else %If Q=false
+
+
+%Aquetses variables es passen a fitxers notebook
+I_if_square = I_if_square_cell;
+Mtrans=M';
+Itrans=I_if_square';
+
+% The following code is to create .txt files where the variables are stored
+% The basename is the one mentioned above
+folderPath = '/Users/sandra/Documents/Doctorat/Projectes PhD/Transicions a 2 pions/Lower order Lagrangian/TransitionData';
+
+fileName = fullfile(folderPath, sprintf('%s.txt', baseName));
+
+%Make sure the path exists
+if ~exist(folderPath, 'dir')
+    fprintf('Error: The folder "%s" does not exist.\n', folderPath);
+    return; 
+end
+
+% Open to write
+file = fopen(fileName, 'w');
+
+% Writhe the heading
+fprintf(file,    '%6s %12s\n', 'M', 'I_if^2');
+
+% Wirthe the two columns
+for i = 1:length(M)
+    fprintf(file,    '%.4f %.15f\n', M(i), I_if_square(i));
+end
+
+
+fclose(file);
+
+
+end
 
 
 %VALOR DE LA MASSA
