@@ -6,20 +6,21 @@ setr0(3.964)
 setL1(0.059)
 setL3(-0.230)
 load("dades.mat","m_c","m_b")
-setm_q(m_c)
+setm_q(m_b)
 setspin(1)
 % l= interpolació (0), llagures distncies (1), bad long distances (2), Vhf
 % partial A (3), Vhf2 partial B (4)
 setl(0)
 
-[ES1J1p,W,~]=Spin1Jcal1_1(m_q,spin);
+[ES1J1p,W,x_wf]=QuarkoniumS0J1(m_q,spin);
 
-x = 0:164;
+len=length(x_wf);
+x = 0:len-1;
 for k = 1:5  % Loop over the 3rd dimension (5 slices)
     figure; % Create a new figure for each plot
     hold on; % Keep multiple scatter plots in the same figure
     
-    for i = 1:4  % Loop over the 4 rows
+    for i = 1:3  % Loop over the 3 rows
         y = squeeze(W(i, :, k));  % Extract the i-th row for the k-th slice
         scatter(x, y, 'filled');  % Scatter plot with filled markers
     end
@@ -28,7 +29,7 @@ for k = 1:5  % Loop over the 3rd dimension (5 slices)
     title(['Plot for W(:,:,', num2str(k), ')']);
     xlabel('Index (0 to 164)');
     ylabel('Values');
-    legend({'Row 1', 'Row 2', 'Row 3', 'Row 4'});
+    legend({'Row 1', 'Row 2', 'Row 3'});
     grid on;
 end
 
