@@ -14,7 +14,7 @@ function res = ExpValFunctions(x)
 end
 
 %Prepares the elements
-function [EV, DeltaE]=QQComputeExpValM(i,f,M,trans,Ji,Jf)
+function [EV, DeltaE] = QQComputeExpValM(i,f,M,trans,Ji,Jf)
 %With a initial al final states we compute expectations values
 %The operators of the expectation depend on M (dipion mass)
 %We want to find the relationship between the result and the M used
@@ -64,9 +64,8 @@ end
 
 
 
-%IMPORTANT: I HAVE TO REWRITE THIS
 
-function EV=HQComputeExpValM(i,f,M,trans,Ji,Jf,double)
+function [EV, DeltaE] = HQComputeExpValM(i,f,M,trans,Ji,Jf,double)
 %With a initial al final states we compute expectations values
 %The operators of the expectation depend on M (dipion mass)
 %We want to find the relationship between the result and the M used
@@ -95,10 +94,10 @@ sfin=spin;
 
 Ef=Efinal(f);
 
-E1=abs(Ef-Ei);
-if M>E1
+DeltaE=abs(Ef-Ei);
+if M>DeltaE
     EV=0;
-    disp(['M>E1 cannot be', num2str(E1)])
+    disp(['M>DeltaE cannot be', num2str(DeltaE)])
 
 else
 %Operator that we want to find the expectated value
@@ -107,7 +106,7 @@ else
      disp('Change tolerance:');
      disp(length(xi)-length(xf));
     else
-    %We must direnciate for hybrids with 2component wf and hybrids with
+    %We must difenciate for hybrids with 2component wf and hybrids with
     %1component wf
     %create a variable: "double". If true, it has double wf. If false it has
     %not
@@ -145,13 +144,8 @@ else
          Op(:,:,3)=Op_s;
      end
 
-     %PROBLEM WITH THE FUNCTION, x for hybrid and x for quarkonium have diferent
-     %dimension. Due to ConstrucMesh?????
-     V=ExpectedValue(i,f,Op,QuarkoniumS0Ji,QuarkoniumS0Jf,m_q,sin,sfin);
-
-     %SHA DE CANVIAR PER A FER LA SUMA SI DOUBLE I NO SI SINGLE!! o meibi no
-     %fa falta
-     EV=sum(V);
+     
+     EV = ExpectedValue(i,f,Op,QuarkoniumS0Ji,QuarkoniumS0Jf,m_q,sin,sfin);
 
     end
 end
@@ -270,9 +264,7 @@ if sin==1 && sfin==0
      %1st and 2nd or the last component 3 depending on whether they are
      %(s/d) or p0 we do
 
-     %V=nansum(Vector)
-
-     V=Vvector;
+     V = sum(Vvector, 'omitnan');
     
 end %end if
 
