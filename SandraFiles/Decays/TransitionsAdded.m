@@ -38,30 +38,18 @@ function res = TransitionsAdded(x)
         res = @DtoDtrans;
    
     %%%%%%%%%%%% HQ %%%%%%%%%%%%%%
-    % p0 -> s
-    elseif strcmp(x, 'HQp0tS')
-        res = @P0toStrans;
-    % p0 -> d
-    elseif strcmp(x, 'HQp0tD')
-        res = @P0toDtrans;
-
     % p1 -> s
     elseif strcmp(x, 'HQp1tS') 
         res = @P1toStrans;
-    % p1 -> d
-    elseif strcmp(x, 'HQp1tD')
+     % p1 -> d
+    elseif strcmp(x, 'HQp1tD') 
         res = @P1toDtrans;
+
 
     % (s/d)1 -> p
     elseif strcmp(x, 'HQsdtP') 
-        res = @SDtoPtrans;
+        res = @SD1toPtrans;
 
-    % (p/f)2 -> s
-    elseif strcmp(x, 'HQpftS')
-        res = @PFtoStrans;
-    % (p/f)2 -> d
-    elseif strcmp(x, 'HQpftD')
-        res = @PFtoDtrans;
     end
     disp(['Output function handle: ', func2str(res)]);
 end
@@ -80,9 +68,9 @@ M = Min:nM:Mfin;
 
 % Initialize variables
 I_if_square_cell = cell(1, 4);
-I_if_square = zeros(1, k + 1);
-I_if_c_square = zeros(1, k + 1);
-I_if_0c_square = zeros(1, k + 1);
+%I_if_square = zeros(1, k + 1);
+%I_if_c_square = zeros(1, k + 1);
+%I_if_0c_square = zeros(1, k + 1);
 I_if_s_square = zeros(1, k + 1);
 %m=0
 I_if0 = zeros(1, k + 1);
@@ -141,10 +129,10 @@ M = Min:nM:Mfin;
 
 % Initialize variables
 I_if_square_cell = cell(1, 4);
-I_if_square = zeros(1, k + 1);
-I_if_c_square = zeros(1, k + 1);
-I_if_0c_square = zeros(1, k + 1);
-I_if_s_square = zeros(1, k + 1);
+%I_if_square = zeros(1, k + 1);
+%I_if_c_square = zeros(1, k + 1);
+%I_if_0c_square = zeros(1, k + 1);
+%I_if_s_square = zeros(1, k + 1);
 %m=0
 I_if0 = zeros(1, k + 1);
 I_if_c0 = zeros(1, k + 1);
@@ -224,10 +212,10 @@ M = Min:nM:Mfin;
 
 % Initialize variables
 I_if_square_cell = cell(1, 4);
-I_if_square = zeros(1, k + 1);
-I_if_c_square = zeros(1, k + 1);
-I_if_0c_square = zeros(1, k + 1);
-I_if_s_square = zeros(1, k + 1);
+%I_if_square = zeros(1, k + 1);
+%I_if_c_square = zeros(1, k + 1);
+%I_if_0c_square = zeros(1, k + 1);
+%I_if_s_square = zeros(1, k + 1);
 %m=0
 I_if0 = zeros(1, k + 1);
 I_if_c0 = zeros(1, k + 1);
@@ -296,10 +284,10 @@ M = Min:nM:Mfin;
 
 % Initialize variables
 I_if_square_cell = cell(1, 4);
-I_if_square = zeros(1, k + 1);
-I_if_c_square = zeros(1, k + 1);
-I_if_0c_square = zeros(1, k + 1);
-I_if_s_square = zeros(1, k + 1);
+%I_if_square = zeros(1, k + 1);
+%I_if_c_square = zeros(1, k + 1);
+%I_if_0c_square = zeros(1, k + 1);
+%I_if_s_square = zeros(1, k + 1);
 %m=0
 I_if0 = zeros(1, k + 1);
 I_if_c0 = zeros(1, k + 1);
@@ -368,9 +356,9 @@ M = Min:nM:Mfin;
 
 % Initialize variables
 I_if_square_cell = cell(1, 4);
-I_if_square = zeros(1, k + 1);
-I_if_c_square = zeros(1, k + 1);
-I_if_0c_square = zeros(1, k + 1);
+%I_if_square = zeros(1, k + 1);
+%I_if_c_square = zeros(1, k + 1);
+%I_if_0c_square = zeros(1, k + 1);
 I_if_s_square = zeros(1, k + 1);
 %m=0
 I_if0=zeros(1,k+1);
@@ -378,11 +366,11 @@ I_if_c0=zeros(1,k+1);
 %m=1
 I_if1=zeros(1,k+1);
 I_if_c1=zeros(1,k+1);
-I_if_s1=zeros(1,k+1);
+%I_if_s1=zeros(1,k+1);
 %m=2
 I_if2=zeros(1,k+1);
 I_if_c2=zeros(1,k+1);
-I_if_s2=zeros(1,k+1);
+%I_if_s2=zeros(1,k+1);
 
 E = zeros(1, k + 1);
 
@@ -441,150 +429,296 @@ DeltaE = E(1);
 end
 
 
-%First all the functions in Quarkonium -> Quarkonium +2Pions transitions
+
+%Now the functions in Quarkonium -> Quarkonium +2Pions transitions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%Here we take into acount the partial- and partial+ parts of the lagrangian
-%density
-%There will be cases where we sum over before square because it is the same
-%transition
+% p1 -> s
+function [I_if_square_cell, DeltaE, M] = P1toStrans(Nin, Nfin, Min, Mfin, length)
 
-% p0->s
-function P0toS=P0toStrans
-%Only 1 M->m'
-%same contribution from partial- and partial+: multiplied x2
-%sum over final and avergae over intial j=0
+k = length;
 
-transition0=I_thetaFunctions('HQp0toS0');
+% Dipion mass row
+nM = (Mfin - Min) / k;
+M = Min:nM:Mfin;
 
-ExpValFunc=ExpValFunctions('HQ');
+% Initialize variables
+I_if_square_cell = cell(1, 9);
 
-Itheta0(n)=ExpValFunc(N,N',M(n),transition0,0,0,false);
+%m inical=1
+I_01_m1 = zeros(1, k + 1);
+I_N0_m1 = zeros(1, k + 1);
+%m inical=0
+I_11_m0 = zeros(1, k + 1);
+%fins aquí son rellevants de calcular la resta son repetides
 
-Itheta(n)=(2*Itheta0(n))*conj(2*Itheta0(n));
+E = zeros(1, k + 1);
+
+% Precompute ExpValFunc
+
+ExpValFunc = ExpValFunctions('HQ');
+transition01 = Hibrid_ItoF('HQp1m1tos0I01');
+transitionN0 = Hibrid_ItoF('HQp1m1tos0IN0');
+transition11 = Hibrid_ItoF('HQp1m0tos0I11');
+
+% Compute first E value and check if consistent
+[I_01_m1(1), E(1)] = ExpValFunc(Nin, Nfin, M(1), transition01, 1, 0, false);
+[I_N0_m1(1), ~] = ExpValFunc(Nin, Nfin, M(1), transitionN0, 1, 0, false);
+[I_11_m0(1), ~] = ExpValFunc(Nin, Nfin, M(1), transition11, 1, 0, false);
+
+% Fill the rest of the arrays
+for n = 2:k+1
+    [I_01_m1(n), E(n)] = ExpValFunc(Nin, Nfin, M(n), transition01, 1, 0, false);
+    [I_N0_m1(n), ~] = ExpValFunc(Nin, Nfin, M(n), transitionN0, 1, 0, false);
+    [I_11_m0(n), ~] = ExpValFunc(Nin, Nfin, M(n), transition11, 1, 0, false);
+
+    % Check if E is constant
+    if E(n) ~= E(1)
+        error('E values are not consistent across iterations.');
+    end
+end
+
+% un cop calculades les transicions rellevants calculem les repetides
+    %m inical =0
+I_NN_m0 = I_11_m0;
+    %m inical=-1
+I_0N_mN = - I_01_m1;
+I_10_mN = I_N0_m1;
+
+
+% Compute spin average de cada terme = com nomes hi ha 1 m possible per a la transicio
+%directament per a cada
+I_if_01_square = (I_01_m1.^2)./3;
+I_if_11_square = (I_11_m0.^2)./3;
+I_if_0N_square = (I_0N_mN.^2)./3;
+I_if_NN_square = (I_NN_m0.^2)./3;
+I_if_10_square = (I_10_mN.^2)./3;
+I_if_N0_square = (I_N0_m1.^2)./3;
+I_if_0N_10 = (I_0N_mN .* I_10_mN )./3;
+I_if_01_N0 = (I_01_m1 .* I_N0_m1 )./3;
+I_if_11_NN = (I_11_m0 .* I_NN_m0 )./3;
+
+% Store in cell array
+I_if_square_cell{1, 1} = I_if_01_square;
+I_if_square_cell{1, 2} = I_if_11_square;
+I_if_square_cell{1, 3} = I_if_0N_square;
+I_if_square_cell{1, 4} = I_if_NN_square;
+I_if_square_cell{1, 5} = I_if_10_square;
+I_if_square_cell{1, 6} = I_if_N0_square;
+I_if_square_cell{1, 7} = I_if_0N_10;
+I_if_square_cell{1, 8} = I_if_01_N0;
+I_if_square_cell{1, 9} = I_if_11_NN;
+
+
+% Return E as a single scalar if consistent
+DeltaE = E(1);
 
 end
 
-% p0->d
-function P0toD=P0toDtrans
-%Only 1 M->m'
-%same contribution from partial- and partial+: multiplied x2
-%sum over final and avergae over intial j=0
 
-transition0=I_thetaFunctions('HQp0toD0');
+% p1 -> d
+function [I_if_square_cell, DeltaE, M] = P1toDtrans(Nin, Nfin, Min, Mfin, length)
 
-ExpValFunc=ExpValFunctions('HQ');
+k = length;
 
-Itheta0(n)=ExpValFunc(N,N',M(n),transition0,0,2,false);
+% Dipion mass row
+nM = (Mfin - Min) / k;
+M = Min:nM:Mfin;
 
-Itheta(n)=(2*Itheta0(n))*conj(2*Itheta0(n));
+% Initialize variables
+I_if_square_cell = cell(1, 9);
+
+%m inical=1
+I_10_m1 = zeros(1, k + 1);
+I_11_m1 = zeros(1, k + 1);
+I_01_m1 = zeros(1, k + 1);
+I_N0_m1 = zeros(1, k + 1);
+%m inical=0
+I_0N_m0 = zeros(1, k + 1);
+I_11_m0 = zeros(1, k + 1);
+
+%fins aquí son rellevants de calcular la resta son repetides
+
+E = zeros(1, k + 1);
+
+% Precompute ExpValFunc
+
+ExpValFunc = ExpValFunctions('HQ');
+transition10 = Hibrid_ItoF('HQp1m1tod2I10');
+transition11 = Hibrid_ItoF('HQp1m1tod1I11');
+transition0N = Hibrid_ItoF('HQp1m0tod1I0N');
+transition01 = Hibrid_ItoF('HQp1m1tod0I01');
+transitionN0 = Hibrid_ItoF('HQp1m1tod0IN0');
+transition110 = Hibrid_ItoF('HQp1m0tod0I11');
+
+% Compute first E value and check if consistent
+[I_10_m1(1), E(1)] = ExpValFunc(Nin, Nfin, M(1), transition10, 1, 2, false);
+[I_11_m1(1), E(1)] = ExpValFunc(Nin, Nfin, M(1), transition11, 1, 2, false);
+[I_0N_m0(1), E(1)] = ExpValFunc(Nin, Nfin, M(1), transition0N, 1, 2, false);
+[I_01_m1(1), E(1)] = ExpValFunc(Nin, Nfin, M(1), transition01, 1, 2, false);
+[I_N0_m1(1), E(1)] = ExpValFunc(Nin, Nfin, M(1), transitionN0, 1, 2, false);
+[I_11_m0(1), E(1)] = ExpValFunc(Nin, Nfin, M(1), transition110, 1, 2, false);
+
+% Fill the rest of the arrays
+for n = 2:k+1
+    [I_10_m1(n), E(n)] = ExpValFunc(Nin, Nfin, M(n), transition10, 1, 2, false);
+    [I_11_m1(n), ~] = ExpValFunc(Nin, Nfin, M(n), transition11, 1, 2, false);
+    [I_0N_m0(n), ~] = ExpValFunc(Nin, Nfin, M(n), transition0N, 1, 2, false);
+    [I_01_m1(n), ~] = ExpValFunc(Nin, Nfin, M(n), transition01, 1, 2, false);
+    [I_N0_m1(n), ~] = ExpValFunc(Nin, Nfin, M(n), transitionN0, 1, 2, false);
+    [I_11_m0(n), ~] = ExpValFunc(Nin, Nfin, M(n), transition110, 1, 2, false);
+
+    % Check if E is constant
+    if E(n) ~= E(1)
+        error('E values are not consistent across iterations.');
+    end
+end
+
+% un cop calculades les transicions rellevants calculem les repetides
+%m inical=0
+I_NN_m0 = I_11_m0;
+I_01_m0 = - I_0N_m0;
+%m inicial =-1
+I_10_mN = I_N0_m1;
+I_0N_mN = - I_01_m1;
+I_N0_mN = I_10_m1;
+I_NN_mN = I_11_m1;
+
+
+% Compute spin average de cada terme = per a cada IXX de diferents m inical
+% fem spin average en Jini=1
+I_if_01_square = (I_01_m1.^2 + I_01_m0.^2)./3;
+I_if_11_square = (I_11_m1.^2 + I_11_m0.^2)./3;
+I_if_0N_square = (I_0N_m0.^2 + I_0N_mN.^2)./3;
+I_if_NN_square = (I_NN_m0.^2 + I_NN_mN.^2)./3;
+I_if_10_square = (I_10_m1.^2 + I_10_mN.^2)./3;
+I_if_N0_square = (I_N0_m1.^2 + I_N0_mN.^2)./3;
+I_if_0N_10 = (I_0N_mN .* I_10_mN + I_10_m1.*0 + I_0N_m0.*0)./3;
+I_if_01_N0 = (I_01_m1 .* I_N0_m1 )./3;
+I_if_11_NN = (I_11_m0 .* I_NN_m0 )./3;
+
+
+% Store in cell array
+I_if_square_cell{1, 1} = I_if_01_square;
+I_if_square_cell{1, 2} = I_if_11_square;
+I_if_square_cell{1, 3} = I_if_0N_square;
+I_if_square_cell{1, 4} = I_if_NN_square;
+I_if_square_cell{1, 5} = I_if_10_square;
+I_if_square_cell{1, 6} = I_if_N0_square;
+I_if_square_cell{1, 7} = I_if_0N_10;
+I_if_square_cell{1, 8} = I_if_01_N0;
+I_if_square_cell{1, 9} = I_if_11_NN;
+
+
+% Return E as a single scalar if consistent
+DeltaE = E(1);
 
 end
 
-% p1->s
-function P1toS=P1toStrans
-%Only 1 M->m'
-%same contribution from partial- and partial+: diferent sign so =0
-%sum over final and avergae over intial j=0
 
-Itheta(n)=0;
+% (s/d)1 -> p
+function [I_if_square_cell, DeltaE, M] = SD1toPtrans(Nin, Nfin, Min, Mfin, length)
 
+k = length;
+
+% Dipion mass row
+nM = (Mfin - Min) / k;
+M = Min:nM:Mfin;
+
+% Initialize variables
+I_if_square_cell = cell(1, 9);
+
+%m inical=1
+I_11_m1 = zeros(1, k + 1);
+I_NN_m1 = zeros(1, k + 1);
+I_01_m1 = zeros(1, k + 1);
+I_N0_m1 = zeros(1, k + 1);
+
+%m inical=0
+I_10_m0 = zeros(1, k + 1);
+I_0N_m0 = zeros(1, k + 1);
+I_11_m0 = zeros(1, k + 1);
+
+
+%fins aquí son rellevants de calcular la resta son repetides
+
+E = zeros(1, k + 1);
+
+% Precompute ExpValFunc
+
+ExpValFunc = ExpValFunctions('HQ');
+transition11 = Hibrid_ItoF('HQsd1m1tp1I11');
+transitionNN = Hibrid_ItoF('HQsd1m1tp1INN');
+transition01 = Hibrid_ItoF('HQsd1m1tp0I01');
+transitionN0 = Hibrid_ItoF('HQsd1m1tp0IN0');
+transition10 = Hibrid_ItoF('HQsd1m0tp1I10');
+transition0N = Hibrid_ItoF('HQsd1m0tp1I0N');
+transition110 = Hibrid_ItoF('HQsd1m0tp0I11');
+
+% Compute first E value and check if consistent
+[I_11_m1(1), E(1)] = ExpValFunc(Nin, Nfin, M(1), transition11, 1, 1, true);
+[I_NN_m1(1), E(1)] = ExpValFunc(Nin, Nfin, M(1), transitionNN, 1, 1, true);
+[I_01_m1(1), E(1)] = ExpValFunc(Nin, Nfin, M(1), transition01, 1, 1, true);
+[I_N0_m1(1), E(1)] = ExpValFunc(Nin, Nfin, M(1), transitionN0, 1, 1, true);
+[I_10_m0(1), E(1)] = ExpValFunc(Nin, Nfin, M(1), transition10, 1, 1, true);
+[I_0N_m0(1), E(1)] = ExpValFunc(Nin, Nfin, M(1), transition0N, 1, 1, true);
+[I_11_m0(1), E(1)] = ExpValFunc(Nin, Nfin, M(1), transition110, 1, 1, true);
+
+
+% Fill the rest of the arrays
+for n = 2:k+1
+    [I_11_m1(n), E(n)] = ExpValFunc(Nin, Nfin, M(n), transition11, 1, 1, true);
+    [I_NN_m1(n), ~] = ExpValFunc(Nin, Nfin, M(n), transitionNN, 1, 1, true);
+    [I_01_m1(n), ~] = ExpValFunc(Nin, Nfin, M(n), transition01, 1, 1, true);
+    [I_N0_m1(n), ~] = ExpValFunc(Nin, Nfin, M(n), transitionN0, 1, 1, true);
+    [I_10_m0(n), ~] = ExpValFunc(Nin, Nfin, M(n), transition10, 1, 1, true);
+    [I_0N_m0(n), ~] = ExpValFunc(Nin, Nfin, M(n), transition0N, 1, 1, true);
+    [I_11_m0(n), ~] = ExpValFunc(Nin, Nfin, M(n), transition110, 1, 1, true);
+
+    % Check if E is constant
+    if E(n) ~= E(1)
+        error('E values are not consistent across iterations.');
+    end
 end
 
-% p1->d
-function P1toD=P1toDtrans
-%3 M->m': the one with M=0->m'=0 gives =0 but the others do not
-%%so we have M
-%same contribution from partial- and partial+: diferent sign so =0
-%sum over final and avergae over intial j=0
+% un cop calculades les transicions rellevants calculem les repetides
+%m inical=0
+I_NN_m0 = I_11_m0;
+I_N0_m0 = - I_10_m0;
+I_01_m0 = I_0N_m0;
+%m inicial =-1
+I_0N_mN = I_01_m1;
+I_10_mN = - I_N0_m1;
+I_NN_mN = - I_11_m1;
+I_11_mN = - I_NN_m1;
 
-%M=0->m'=0 when adding partial- and partial+ =0
-%M=-1->m'=-1 same but with diferent sign as M=1->m'=1 so they are summed
-%over squared
 
-transition1=I_thetaFunctions('HQp1toD1');
+% Compute spin average de cada terme = per a cada IXX de diferents m inical
+% fem spin average en Jini=1
+I_if_01_square = (I_01_m1.^2 + I_01_m0.^2)./3;
+I_if_11_square = (I_11_m1.^2 + I_11_m0.^2 +  I_11_mN.^2)./3;
+I_if_0N_square = (I_0N_mN.^2 + I_0N_m0.^2)./3;
+I_if_NN_square = (I_NN_m1.^2 + I_NN_m0.^2 + I_NN_mN.^2)./3;
+I_if_10_square = (I_10_m0.^2 + I_10_mN.^2)./3;
+I_if_N0_square = (I_N0_m1.^2 + I_N0_m0.^2)./3;
+I_if_0N_10 = (I_0N_mN .* I_10_mN + I_0N_m0 .* I_10_m0)./3;
+I_if_01_N0 = (I_01_m1 .* I_N0_m1 + I_01_m0 .* I_N0_m0 )./3;
+I_if_11_NN = (I_11_m0 .* I_NN_m0 + I_11_m1 .* I_NN_m1 + I_11_mN .* I_NN_mN)./3;
 
-ExpValFunc=ExpValFunctions('HQ');
 
-Itheta1(n)=ExpValFunc(N,N',M(n),transition1,1,2,false);
+% Store in cell array
+I_if_square_cell{1, 1} = I_if_01_square;
+I_if_square_cell{1, 2} = I_if_11_square;
+I_if_square_cell{1, 3} = I_if_0N_square;
+I_if_square_cell{1, 4} = I_if_NN_square;
+I_if_square_cell{1, 5} = I_if_10_square;
+I_if_square_cell{1, 6} = I_if_N0_square;
+I_if_square_cell{1, 7} = I_if_0N_10;
+I_if_square_cell{1, 8} = I_if_01_N0;
+I_if_square_cell{1, 9} = I_if_11_NN;
 
-%The N is not n in np_J: remember the ordering of states for (s/d)1 and p1
 
-Itheta(n)=(2*(Itheta1(n)*conj(Itheta1(n))))/3;
-
-end
-
-% (s/d)1->p
-function SDtoP=SDtoPtrans
-%3 M->m': partial- and partial+ are the same so nothing is 0
-
-%M=0->m'=0 when adding partial- and partial+ = 0
-%For partial-: M=-1->m'=-1 is the same x(-1) that for partial+: is M=1->m'=1
-%For partial-: M=1->m'=1 is the same x(-1) that for partial+: is M=-1->m'=-1 
-
-%Therefore the transitions 1->1 and -1->-1 give the same result
-
-transition0=I_thetaFunctions('HQsdtoP0');
-transition1=I_thetaFunctions('HQsdtoP1');
-transitionN=I_thetaFunctions('HQsdtoPn'); %n of negative
-
-ExpValFunc=ExpValFunctions('HQ');
-
-Itheta0(n)=ExpValFunc(N,N',M(n),transition0,1,1,true);
-Itheta1(n)=ExpValFunc(N,N',M(n),transition1,1,1,true);
-IthetaN(n)=ExpValFunc(N,N',M(n),transitionN,1,1,true);
-
-%The N is not n in n(s/d)_J: remember the ordering of states for (s/d)1 and p1
-
-Itheta(n)=( 2*(Itheta1(n)-IthetaN(n))*conj(Itheta1(n)-IthetaN(n)) )/3;
-
-end
-
-% (p/f)2->s
-function PFtoS=PFtoStrans
-%1 M->m': partial- and partial+ are the same so nothing is 0
-
-transition0=I_thetaFunctions('HQpftoS0');
-
-ExpValFunc=ExpValFunctions('HQ');
-
-Itheta0(n)=ExpValFunc(N,N',M(n),transition0,2,0,true);
-
-%The N is not n in n(p/f)_J: remember the ordering of states for (p/f)2 and
-%d2
-
-Itheta(n)=((2*Itheta0(n))*conj(2*Itheta0(n)))/5;
-
-end
-
-% (p/f)2->s
-function PFtoD=PFtoDtrans
-%5 M->m': partial- and partial+ are the same so nothing is 0
-
-%M=0->m'=0 when adding partial- and partial+ its the double (all before
-%squaring)
-%For partial-: M=-1,-2->m'=-1,-2 is the same that for partial+: is M=1,2->m'=1,2 
-%For partial-: M=1,2->m'=1,2 is the same that for partial+: is M=-1,-2->m'=-1,-2 
-
-%Therefore the transitions 1->1 and -1->-1; 2->2 and -2->-2 give the same result
-
-transition0=I_thetaFunctions('HQpftoD0');
-transition1=I_thetaFunctions('HQpftoD1');
-transitionN=I_thetaFunctions('HQpftoDn'); %n of negative
-transition2=I_thetaFunctions('HQpftoD2');
-transitionM=I_thetaFunctions('HQpftoDm'); %m of doble negative
-
-ExpValFunc=ExpValFunctions('HQ');
-
-Itheta0(n)=ExpValFunc(N,N',M(n),transition0,2,2,true);
-Itheta1(n)=ExpValFunc(N,N',M(n),transition1,2,2,true);
-IthetaN(n)=ExpValFunc(N,N',M(n),transitionN,2,2,true);
-Itheta2(n)=ExpValFunc(N,N',M(n),transition2,2,2,true);
-IthetaM(n)=ExpValFunc(N,N',M(n),transitionM,2,2,true);
-
-%The N is not n in n(p/f)_J: remember the ordering of states for (p/f)2 and
-%d2
-
-Itheta(n)=(2*(Itheta1(n)+IthetaN(n))*conj(Itheta1(n)+IthetaN(n)) + 2*(Itheta2(n)+IthetaM(n))*conj(Itheta2(n)+IthetaM(n)) + (2*Itheta0(n))*conj(2*Itheta0(n)))/5;
+% Return E as a single scalar if consistent
+DeltaE = E(1);
 
 end
