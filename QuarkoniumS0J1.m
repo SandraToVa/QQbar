@@ -10,7 +10,7 @@ function [E,W,x]=QuarkoniumS0J1(m,s)
 
   % the endpoints of the integration interval:
 system.a=0.001;   
-system.b=22; 
+system.b=22;
 % parameters of the boundary conditions:
 system.A1= eye(3);
 system.A2= zeros(3,3);
@@ -45,7 +45,7 @@ if s==0 %Quarkonium
         E(kindex)=EigvData.eigenvalues(3*kindex)/m;
     end
 else %Hybrid
-    tol1=1.9e-7;   %ajust this tolerance in function of the mesh x=173
+    tol1=1.9e-7;   %from transitions p1->s,d x=173 (bottom i charm)
     [EigvData,meshData]=computeEigenvalues(system,0,kmax,tol1); 
     E=EigvData.eigenvalues/m;
 

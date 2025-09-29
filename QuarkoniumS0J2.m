@@ -36,7 +36,8 @@ kmax=3; %transitions
 if s==0 %Quarkonium
     %number of actual states
     E=zeros(1,kmax+1);
-    tol0=5e-6;  %5e-6 gives x=90 for d->s (bottom) and x=78 d->s (charm)
+    %tol0=5e-6;  %5e-6 gives x=90 for d->s (bottom) and x=78 d->s (charm)
+    tol0=1.1e-7;  % p0->d transitions x=173 (bottom)
     [EigvData,meshData]=computeEigenvalues(system,0,kmax*3,tol0);
 
     for k=0:kmax

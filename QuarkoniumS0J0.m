@@ -39,9 +39,10 @@ kmax=6; % for transicions
 if s==0 %Quarkonium
     %number of actual states
     E=zeros(1,kmax+1);
-    %tol0=2e-7; %for sd hybrid
+    %tol0=1.5e-8; %for sd->s/p1->s hybrid x=173 (bottom)
+    tol0=0.6e-8; %for p1->s hybrid x=148 (charm)
     %tol0=5e-6; %for s->s/d->d quarkonium x=62
-    tol0=6e-7; %for d->s (bottom) x=90
+    %tol0=6e-7; %for d->s (bottom) x=90
     %tol0=2e-7;  %for d->s (charm) x=78
     [EigvData,meshData]=computeEigenvalues(system,0,kmax*3,tol0);
 
@@ -52,7 +53,8 @@ if s==0 %Quarkonium
 else 
     %number of actual states
     E=zeros(1,kmax+1);
-    tol1=5e-8;   %1.5e-6;
+    tol1=5.2e-8;    %for p0->p (bottom) x=173
+    %tol1=5e-8;   %1.5e-6;
     %For p0 to d quarkonium 1.5e-6 is x=81
     [EigvData,meshData]=computeEigenvalues(system,0,kmax*3,tol1); %ajust this tolerance
 
