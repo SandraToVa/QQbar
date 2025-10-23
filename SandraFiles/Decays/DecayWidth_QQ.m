@@ -27,9 +27,9 @@ setm_q(m_b)
 
 %Change this depending on the transition
 
-ComputationIE = TransitionsAdded('QQStoS');      
+ComputationIE = TransitionsAdded('QQStoD');      
 
-[I_if_square_cell, DeltaE, M] = ComputationIE(5, 3, 0.28, 0.55, 50);
+[I_if_square_cell, DeltaE, M] = ComputationIE(5, 1, 0.28, 0.73, 50);
 
 %Obtain the I_if^2 from the cell
 I_if_square = I_if_square_cell{1,1};
@@ -139,8 +139,8 @@ end
 
 % Define file path and name
 % The following code is to create .txt files where the variables are stored
-file_name = 'GammaVSmass_QQbottom_5s-3s.txt';
-folder_path = '/Users/sandra/Documents/Doctorat/Projectes PhD/Transicions a 2 pions/Lower order Lagrangian/DecayWidth';
+file_name = 'GammaVSmass_QQbottom_5s-1d.txt';
+folder_path = '/Users/sandra/Documents/Doctorat/Projectes PhD/Transicions a 2 pions/Lower order Lagrangian/Quarkonium/DecayWidth';
 
 full_path = fullfile(folder_path, file_name);
 
