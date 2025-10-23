@@ -1,10 +1,10 @@
 %Valor r0
 setr0(3.964)
 %Constants ajustades
-setk1(-0.023)
-setk2(0.0009)
+setk1(-0.019)
+setk2(0.0028)
 %Valors Lambda g
-setL1(0.059)
+setL1(-0.059)
 setL3(-0.230)
 load("dades.mat","m_c","m_b")
 setm_q(m_b)
@@ -15,8 +15,8 @@ setspin(1) %s=1 for hybrids
 
 %Programa que calcula los valors del espectre per als nivells del c
 % 2(s/d)2 and 1d2
-c=zeros(8);
-b=zeros(8);
+c=zeros(8,1);
+b=zeros(8,1);
 
 %Vector en los valors de la energia que necesito
 [aux,~,~]=QuarkoniumS0J1(m_q,spin);

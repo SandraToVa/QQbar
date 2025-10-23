@@ -1,53 +1,30 @@
 %Valor r0
 setr0(3.964)
 %Constants ajustades
-setk1(-0.023)
-setk2(0.0009)
+setk1(-0.0700)
+setk2(0.0117)
 %Valors Lambda g
-setL1(0.059)
+setL1(-0.059)
 setL3(-0.230)
 % l= interpolació (0), llagures distncies (1), bad long distances (2)
 setl(0)
 %massa
 load("dades.mat","m_c","m_b")
-setm_q(m_b)
+setm_q(m_c)
 setspin(1) %s=1 for hybrids
 
 %Totes les E en GeV
 %Vector de valors de E calculades
-a=zeros(14);
-%Vector de valors de E teòriques del charm per al bottom no nhi ha
-t(1)=4.0296;
-t(2)=3.8976;
-t(3)=3.9286;
-t(4)=4.0746;
+a=zeros(1,14);
 
-t(5)=4.1106;
-t(6)=4.1756;
-t(7)=4.2386;
-t(8)=4.4396;
-t(9)=4.1116;
-t(10)=4.1786;
-t(11)=4.5136;
-t(12)=4.1436;
-t(13)=4.2306;
-t(14)=4.2516;
-
+res=zeros(14,1);
+%Vector de valors de E teòriques
+t = [4.0296 3.8976 3.9286 4.0746 4.1106 4.1756 4.2386 4.4396 ...
+     4.1116 4.1786 4.5136 4.1436 4.2306 4.2516];
 %Vector error de energies teòriques
-e(1)=0.0176;
-e(2)=0.0186;
-e(3)=0.0236;
-e(4)=0.0216;
-e(5)=0.0276;
-e(6)=0.0186;
-e(7)=0.0266;
-e(8)=0.0466;
-e(9)=0.0236;
-e(10)=0.0276;
-e(11)=0.0536;
-e(12)=0.0256;
-e(13)=0.0326;
-e(14)=0.0346;
+e = [0.0176 0.0186 0.0236 0.0216 0.0276 0.0186 0.0266 0.0466 ...
+     0.0236 0.0276 0.0536 0.0256 0.0326 0.0346];
+
 
 %Vector en los valors de la energia que necesito
 [aux,~,~]=QuarkoniumS0J1(m_q,spin);
@@ -86,32 +63,28 @@ a(13)=aux(1);
 a(14)=aux(1);
 
 if m_q==1.4702
-chi=0;
-    for i=1:14
-     chi=chi+((a(i)-t(i))^2)/((e(i))^2);
-    end
-chi;  %Per al bottom el valor de chi no te sentit pq les dade steoriques son del c
+    chi= sum( ( (a - t) ./ e ).^2 );
 end
 
 %Final value ordered:
 %(s/d)1
-res(1)=a(1);
-res(2)=a(2);
-res(3)=a(3);
-res(4)=a(4);
+res(1,1)=a(1,1);
+res(2,1)=a(1,2);
+res(3,1)=a(1,3);
+res(4,1)=a(1,4);
 %(p1)
-res(5)=a(12);
-res(6)=a(5);
-res(7)=a(9);
-res(8)=a(6);
+res(5,1)=a(1,12);
+res(6,1)=a(1,5);
+res(7,1)=a(1,9);
+res(8,1)=a(1,6);
 %(p/f)2
-res(9)=a(13);
-res(10)=a(10);
-res(11)=a(7);
-res(12)=a(14);
+res(9,1)=a(1,13);
+res(10,1)=a(1,10);
+res(11,1)=a(1,7);
+res(12,1)=a(1,14);
 %p0
-res(13)=a(8);
-res(14)=a(11);
+res(13,1)=a(1,8);
+res(14,1)=a(1,11);
 
 
 
