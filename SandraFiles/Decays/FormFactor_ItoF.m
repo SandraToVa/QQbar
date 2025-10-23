@@ -209,6 +209,7 @@ end
 %In here we have contributions from F, Fc and Fs i Fsx
 %Depenent de la M utilitzada
 
+
 %F (l=2,m=0 -> l=0,m=0)
 function Fds00=D0toStransF(x,Ei,Ef,M)
 % x is the system = r in the string
@@ -254,7 +255,7 @@ r=diag(x);
 %FSds20= sqrt(2/15)*r -(r^3*Sq^2)/(84*sqrt(30));
 %Hole function
 A=diag(diag((1 ./ (2 .* r.^4 .* Sq.^5))));
-B = sqrt(15 / 2) * (2 .* r .* Sq .* (24 + r.^2 .* Sq^2) .* cos((Sq / 2) .* r) + 4 .* (-24 + r.^2 .* Sq^2) .* sin((Sq / 2) .* r) + r.^4 .* Sq^4 .* sinint((Sq / 2) .* r));
+B = sqrt(15 / 2) *  (2 .* r .* Sq .* (24 + r.^2 .* Sq^2) .* cos((Sq / 2) .* r) + 4 .* (-24 + r.^2 .* Sq^2) .* sin((Sq / 2) .* r) + r.^4 .* Sq^4 .* sinint((Sq / 2) .* r));
 FSds20=A*B;
 end
 
