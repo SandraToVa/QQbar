@@ -348,6 +348,8 @@ function f1=Vg(x)
        HF1=((Vsa/6)*(r0^3/x.^3)-(1/3)*Vsb*(r0^2/x.^2))*hevi;
    elseif l==2 %Bad long distances:
        HF1=(Vsa/6)-(1/3)*Vsb;
+   elseif l==3 %curtesdistàncies
+       HF1=k1;
    end
   end  
   
@@ -389,6 +391,8 @@ end
        HF2=-(1/2)*( Vsa*(r0^3/x.^3) + Vsb*(r0^2/x.^2) )*hevi;
    elseif l==2 %Bad long distances:
        HF2=-(1/2)*( Vsa + Vsb );
+   elseif l==3 %curtesdistàncies
+       HF2=k2*(x.^2);
    end
   end 
   
