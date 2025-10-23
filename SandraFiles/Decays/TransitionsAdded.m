@@ -328,10 +328,18 @@ end
 
 % Compute el spin average = com nomes hi ha 1 m possible per a la transicio
 %directament per a cada
+%For spin =0
 I_if_square = (I_if0.^2);
 I_if_c_square = (I_if_c0.^2);
 I_if_0c_square = (I_if0 .* I_if_c0);
 I_if_s_square = (I_if_s2.^2);
+
+%For spin = 1
+%I_if_square = (2*(1/2)*I_if0.^2)/3;
+%I_if_c_square = (I_if_c0.^2)/3;
+%I_if_0c_square = (I_if0 .* I_if_c0)/3;
+%I_if_s_square = ((2/3)*I_if_s2.^2 + (1/3)*I_if_s2.^2)/3;
+
 
 % Store in cell array
 I_if_square_cell{1, 1} = I_if_square;
