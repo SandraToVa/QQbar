@@ -32,10 +32,10 @@ I1=1;
 results=zeros(21,21); 
 
 % Programa que busca la k òptima per a la chi^2
-for ka1=-0.045:0.001:-0.035
+for ka1=-0.044:0.0001:-0.042
     setk1(ka1); 
     I2=1;
-    for ka2=-0.005:0.001:0.004
+    for ka2=-0.0018:0.0001:-0.0010
         setk2(ka2);
 
         %Vector en los valors de la energia que necesito
