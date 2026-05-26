@@ -19,23 +19,32 @@
 
 % We work in GeV!!
 
-%Valor r0
-setr0(3.964)
+
 %massa
 load("dades.mat","m_c","m_b")
 setm_q(m_b)
 
 %Change this depending on the transition
 
-ComputationIE = TransitionsAdded('QQStoD');      
+ComputationIE = TransitionsAdded('QQStoS');  
 
-[I_if_square_cell, DeltaE, M] = ComputationIE(5, 1, 0.28, 0.73, 50);
+%spin
+s=1;
+
+[I_if_square_cell, DeltaE, M] = ComputationIE(3, 2, 0.28, 0.347, 50, s);
+
+%%
+
+file_name = 'GammaVSmass_QQcharm_3s-2s.txt';
+base_filename = 'QQcharm_3s-2s';
 
 %Obtain the I_if^2 from the cell
 I_if_square = I_if_square_cell{1,1};
 I_if_c_square = I_if_square_cell{1,2};
 I_if_0c_square = I_if_square_cell{1,3};
-I_if_s_square = I_if_square_cell{1,4};
+I_if_1_square = I_if_square_cell{1,4};
+I_if_2_square = I_if_square_cell{1,5};
+
 
 
 % Value of pion mass 140MeV
@@ -50,7 +59,8 @@ M_valid = M(valid_idx);
 I_if_valid = I_if_square(valid_idx);
 I_if_c_valid = I_if_c_square(valid_idx);
 I_if_0c_valid = I_if_0c_square(valid_idx);
-I_if_s_valid = I_if_s_square(valid_idx);
+I_if_1_valid = I_if_1_square(valid_idx);
+I_if_2_valid = I_if_2_square(valid_idx);
 
 
 num_valid = length(M_valid);
@@ -68,18 +78,21 @@ for i = 1:num_valid
     CECM_values(i) = CECMTerm(I_if_valid(i), I_if_0c_valid(i), m, M_valid(i), DeltaE);
     CmCM_values(i) = CmCMTerm(I_if_valid(i), m, M_valid(i), DeltaE);
     CmCE_values(i) = CmCETerm(I_if_valid(i), I_if_0c_valid(i), m, M_valid(i), DeltaE);
-    CE2_values(i) = CE2Term(I_if_valid(i), I_if_0c_valid(i), I_if_c_valid(i), I_if_s_valid(i), m, M_valid(i), DeltaE);
+    CE2_values(i) = CE2Term(I_if_valid(i), I_if_0c_valid(i), I_if_c_valid(i), I_if_1_valid(i), I_if_2_valid(i), m, M_valid(i), DeltaE);
 end
 
 % Now with each part of the gamma separated by parameters we define the
 % parameters computed with mathematica:
 % Each row is a set: [Cm, CM, CE]  -> corresponds to [Cp, Cpp, Ce]
+
+%Param sets obtingut al resoldre el sistema d'equacions
 param_sets = [
-    -0.523739,  0.00249372,   0.0534711;
-    -0.516711,  -0.0608308,   0.115396;
-     0.516711,  0.0608308,    -0.115396;
-     0.523739,  -0.00249372,  -0.0534711
+   -0.569395,  0.0413287,   0.0225432;
+   -0.566654, -0.00973277,  0.0730556;
+    0.566654,  0.00973277, -0.0730556;
+    0.569395, -0.0413287,  -0.0225432
 ];
+
 
 %Define a decaywidth matrix where each row is a gamma computed with the
 %diferent 4 parameters. If weverything goes well 4 of the results should be
@@ -127,7 +140,7 @@ CmCE_integral = trapz(M2_valid, CmCE_values);
 CE2_integral = trapz(M2_valid, CE2_values);
 
 GammaIntegral = zeros(1,4);
-for N=1:4
+for N=1:1
     Cm = param_sets(N,1);
     CM = param_sets(N,2);
     CE = param_sets(N,3);
@@ -139,7 +152,7 @@ end
 
 % Define file path and name
 % The following code is to create .txt files where the variables are stored
-file_name = 'GammaVSmass_QQbottom_5s-1d.txt';
+%file_name = 'GammaVSmass_QQbottom_5s-3s.txt';
 folder_path = '/Users/sandra/Documents/Doctorat/Projectes PhD/Transicions a 2 pions/Lower order Lagrangian/Quarkonium/DecayWidth';
 
 full_path = fullfile(folder_path, file_name);
@@ -154,6 +167,9 @@ end
 
 % Write header
 fprintf(fileID, 'Decay Width results for the different constant sets:\n');
+fprintf(fileID, 'Decay width 1 (GeV)       Decay width 2 (GeV)       Decay width 3 (GeV)       Decay width 4 (GeV)\n');
+fprintf(fileID,    '%.15f %.15f %.15f %.15f\n', GammaFinal(1), GammaFinal(2), GammaFinal(3), GammaFinal(4));
+fprintf(fileID, '----------------------------------------------------------------------------------------\n');
 fprintf(fileID, 'Mass (GeV)     Gamma1 (GeV)       Gamma2 (GeV)       Gamma3 (GeV)       Gamma4 (GeV)\n');
 fprintf(fileID, '----------------------------------------------------------------------------------------\n');
 
@@ -168,46 +184,106 @@ fprintf('Results saved to %s\n', full_path);
 
 
 
+% ============================================================
+% Write I_if_*_valid functions vs M_valid into .txt files
+% ============================================================
+
+% Example variables:
+% M_valid, I_if_valid, I_if_c_valid, I_if_0c_valid,
+% I_if_1_valid, I_if_2_valid
+
+% ---- Set output folder and base filename ----
+folder_path_new = '/Users/sandra/Documents/Doctorat/Projectes PhD/Transicions a 2 pions/Lower order Lagrangian/Quarkonium/TransitionData';
+%base_filename = 'QQbottom_5s-3s';
+
+% ---- Create a structure to simplify looping ----
+dataStruct = {
+    'I_if_valid',   '[R]^2',                    '.txt';
+    'I_if_c_valid', '[R^0]^2',                  '_c.txt';
+    'I_if_0c_valid','[R * R^0]',                '_0c.txt';
+    'I_if_1_valid', '[R^1]^2 and [R^{-1}]^2',   '_1.txt';
+    'I_if_2_valid', '[R^2]^2 and [R^{-2}]^2',   '_2.txt'
+};
+
+% ---- Loop over each dataset ----
+for k = 1:size(dataStruct,1)
+    varName  = dataStruct{k,1};
+    header   = dataStruct{k,2};
+    suffix   = dataStruct{k,3};
+
+    % Get the variable dynamically
+    if ~exist(varName, 'var')
+        warning('Variable %s not found in workspace, skipping...', varName);
+        continue;
+    end
+    Y = eval(varName);
+
+    % Build full file path
+    file_name = [base_filename, suffix];
+    full_path = fullfile(folder_path_new, file_name);
+
+    % Open file for writing
+    fileID = fopen(full_path, 'w');
+    if fileID == -1
+        warning('Could not open %s for writing. Skipping...', full_path);
+        continue;
+    end
+
+    % ---- Write header ----
+    fprintf(fileID, 'M\t%s\n', header);
+
+    % ---- Write data ----
+    for i = 1:length(M_valid)
+        fprintf(fileID, '%.8f\t%.15e\n', M_valid(i), Y(i));
+    end
+
+    % ---- Close file ----
+    fclose(fileID);
+    fprintf('File written: %s\n', full_path);
+end
+
 
 function term = Cm2Term(I_if_square, m, M, DeltaE)
-    term = (1 / (15 * M^4)) * sqrt(DeltaE^2 - M^2) * sqrt(1 - (4 * m^2) / (M^2)) ...
-        * (15 * I_if_square * m^4 * M^4);
+    term = sqrt(DeltaE^2 - M^2) * sqrt(1 - (4 * m^2) / (M^2)) ...
+        * (2* I_if_square * m^4);
 end
 
 function term = CM2Term(I_if_square, m, M, DeltaE)
-    term = (1 / (15 * M^4)) * sqrt(DeltaE^2 - M^2) * sqrt(1 - (4 * m^2) / (M^2)) ...
-        * (15 * I_if_square * M^8);
+    term = sqrt(DeltaE^2 - M^2) * sqrt(1 - (4 * m^2) / (M^2)) ...
+        * (2* I_if_square * M^4);
 end
 
 function term = CECMTerm(I_if_square, I_if_0c_square, m, M, DeltaE)
-    term = (1 / (15 * M^4)) * sqrt(DeltaE^2 - M^2) * sqrt(1 - (4 * m^2) / (M^2)) ...
-        * (10 * M^4 * (I_if_square * (8 * m^2 + M^2) * DeltaE^2 ...
-        + I_if_0c_square * (4 * M^4 - M^2 * DeltaE^2 + 4 * m^2 * (2 * M^2 - 5 * DeltaE^2))));
+    term1 = I_if_0c_square * (4*m^2*M^2 + 2*M^4 - 2*(2*m^2 + M^2)*DeltaE^2);
+    term2 = I_if_square * (4*m^2*M^2 - M^4 + 2*(2*m^2 + M^2)*DeltaE^2);
+    term = sqrt(DeltaE^2 - M^2) * sqrt(1 - (4 * m^2) / (M^2)) ...
+        * (4 /3) * (term1 + term2);
 end
 
 function term = CmCMTerm(I_if_square, m, M, DeltaE)
-    term = (1 / (15 * M^4)) * sqrt(DeltaE^2 - M^2) * sqrt(1 - (4 * m^2) / (M^2)) ...
-        * (30 * I_if_square * m^2 * M^6);
+    term = sqrt(DeltaE^2 - M^2) * sqrt(1 - (4 * m^2) / (M^2)) ...
+        * (4 * I_if_square * m^2 * M^2);
 end
 
 function term = CmCETerm(I_if_square, I_if_0c_square, m, M, DeltaE)
-    term = (1 / (15 * M^4)) * sqrt(DeltaE^2 - M^2) * sqrt(1 - (4 * m^2) / (M^2)) ...
-        * (10 * m^2 * M^2 * (I_if_square * (8 * m^2 + M^2) * DeltaE^2 ...
-        + I_if_0c_square * (4 * M^4 - M^2 * DeltaE^2 + 4 * m^2 * (2 * M^2 - 5 * DeltaE^2))));
+    term1 = I_if_0c_square * (2*M^4 +4*m^2*M^2 - 2*(2*m^2 + M^2)*DeltaE^2 );
+    term2 = I_if_square * ( -M^4 +4*m^2*M^2 + 2*(2*m^2 + M^2)*DeltaE^2  );
+    term = sqrt(DeltaE^2 - M^2) * sqrt(1 - (4 * m^2) / (M^2)) ...
+        * ((4 * m^2)/(3*M^2))  * (term1 + term2);
 end
 
-function term = CE2Term(I_if_square, I_if_0c_square, I_if_c_square, I_if_s_square, m, M, DeltaE)
-    term = (1 / (15 * M^4)) * sqrt(DeltaE^2 - M^2) * sqrt(1 - (4 * m^2) / (M^2)) * ...
-        (2*2 * I_if_s_square * M^4 * (-4 * m^2 + M^2)^2 + I_if_square * (192 * m^4 * DeltaE^4 ...
-        - 16 * m^2 * M^2 * DeltaE^4 + 7 * M^4 * DeltaE^4) ...
-        + 2 * I_if_0c_square * DeltaE^2 * (4 * M^6 - 15 * M^4 * DeltaE^2 + ...
-        32 * m^4 * (2 * M^2 - 15 * DeltaE^2) + m^2 * (88 * M^4 + 60 * M^2 * DeltaE^2)) ...
-        + I_if_c_square * (7 * M^4 * (4 * M^4 + 5 * DeltaE^4) + 16 * m^4 * (8 * M^4 - 20 * M^2 * DeltaE^2 + 75 * DeltaE^4) ...
-        + 8 * m^2 * (12 * M^6 - 50 * M^4 * DeltaE^2 - 25 * M^2 * DeltaE^4)));
+function term = CE2Term(I_if_square, I_if_0c_square, I_if_c_square, I_if_1_valid, I_if_2_square, m, M, DeltaE)
+    term0= 2* ( (4/(15*M^2)) * I_if_1_valid * (-4*m^2 + M^4)^2 * DeltaE^2 );
+    term1= (2/(15*M^4)) * I_if_c_square *( 32*m^4*M^4 + 24*m^2*M^6 + 7*M^8 - 4*M^2*DeltaE^2*(8*m^4 ...
+        + 16*m^2*M^2 + 3*M^4) + 8*(6*m^4 + 2*m^2*M^2 + M^4)*DeltaE^4 );
+    term2= (4/(15*M^4)) * I_if_square * ( M^4*(-4*m^2 + M^2)^2 - 4*M^2*(M^2 - 4*m^2)*(m^2+M^2)*DeltaE^2 ...
+        + 4*(6*m^4 + 2*m^2*M^2 + M^4)*DeltaE^4 );
+    term3= 2 * (1/(15)) * I_if_2_square * (-4*m^2 + M^2)^2  ;
+    term4= (4/(15*M^4)) * I_if_0c_square * ( 32*m^4*M^4 + 4*m^2*M^6 - 3*M^8 + 10*M^4*(2*m^2 + M^2)*DeltaE^2 ...
+        - 8*(6*m^4 + 2*m^2*M^2 + M^4)*DeltaE^4 );
+    term = sqrt(DeltaE^2 - M^2) * sqrt(1 - (4 * m^2) / (M^2)) * ...
+        (term0 + term1 + term2 + term3 + term4);
 end
-
-
-
 
 
 
@@ -235,14 +311,5 @@ global v7
 v7 = val7;
 end
 
-% VALOR DEL r0
-function x3=r0
-global v3
-x3=v3;
-end 
 
-function setr0(val3)
-global v3
-v3 = val3;
-end
 
