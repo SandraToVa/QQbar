@@ -174,10 +174,10 @@ function V=ExpectedValue(i,f,Op,initial,final,m,sin,sfin)
 %I have to modify the tolerance in "initial" and "final" for the mesh to
 %coincide. And for the x and lenght of the 2nd dimension of W to coincide!
 setspin(sin)
-[Ei,Wi,~]=initial(m,spin);
+[Ei,Wi,xi]=initial(m,spin);
 
 setspin(sfin)
-[Ef,Wf,x]=final(m,spin);
+[Ef,Wf,xf]=final(m,spin);
 
 %The vale of our initial state
 %disp('Initial state i')
@@ -186,9 +186,9 @@ setspin(sfin)
 Ei(i);
 %disp('Wavefunction:')
 Yi=Wi(:,:,i);
+% To get just the number of rows:
+numRi = size(Yi, 1);
 
-%The length of the wavefunction i 
-[numRi,~] = size(Yi);
 
 
 %The vale of our final state
@@ -196,31 +196,32 @@ Yi=Wi(:,:,i);
 %f;
 %disp('With energy:')
 Ef(f);
-%disp('Wavefunction:')
-Yf=Wf(:,:,f);
+%disp('Wavefunction:') We only use the first row for quarkonium
+Yf=Wf(1,:,f);
 
-%The length of the wavefunction f 
+%Yf a les x de la incial
+%final state in terms of the inital state vector
+Yf_new = interp1(xf, Yf, xi, 'spline');
 
-[numRf,~] = size(Yf);
 
-if numRi ~= numRf
-    disp('Number of rows in wave functions not equal')
-end
 
 %If we work with quarkonium the wave functions only have on relevant row:
 %the first one
 if sin==0 && sfin ==0
     Yi_f=Yi(1,:); %row vector inicial
-    Yi_c=Yi_f'; %column vector inicial
     
-    Yf_f=Yf(1,:); %row vector fianl
+    Yf_f=Yf_new; %row vector fianl
 
-    norm = Yf_f * Yi_c;
+    %Op in row vector form
+    O = diag(Op).';
+
+    norm_f = sqrt(trapz(xi, abs(Yf_f).^2));  %norm final vector
+    norm_i = sqrt(trapz(xi,abs(Yi_f).^2));  %norm initial vector
     
     %sandwitch wave function en operador
-    result = Yf_f * Op * Yi_c; 
+    result = trapz(xi, conj(Yf_f) .* (O .* Yi_f));
 
-    V = result/norm;
+    V = result/(norm_f *norm_i);
 
 end %end of if
         
@@ -241,22 +242,24 @@ if sin==1 && sfin==0
         %Muliply each row for any row of the other wavefunction normalized
         
         Yi_f=Yi(N,:); %row vector inicial
-        Yi_c=Yi_f'; %column vector inicial
 
-        Yf_f=Yf(1,:); %row vector final
+        Yf_f=Yf_new; %row vector final
 
         %The operator Op in this case is three elements, one for the upper row and
         %one for the bottom row (in the case of double) and the third for
         %the case of single
         OpRow=Op(:,:,N);
 
+        O=diag(OpRow).'; %row vector operator
+
         %compute the norm for each row of the hibrid state
-        norm = Yf_f * Yi_c;
+        norm_f = sqrt(trapz(xi, abs(Yf_f).^2));  %norm final vector
+        norm_i = sqrt(trapz(xi,abs(Yi_f).^2));  %norm initial vector
 
         %sandwitch wave function with operator for each row of the hibrid
-        result = Yf_f * OpRow * Yi_c; 
+        result = trapz(xi, conj(Yf_f) .* (O .* Yi_f));
 
-        Vvector(N,1) = result/norm; %store for each row
+        Vvector(N,1) = result/(norm_f *norm_i); %store for each row
 
      end %end for
 
