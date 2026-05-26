@@ -26,7 +26,7 @@ system.V=@potentialMatrix;
 %disp('Calculating eigenvalues with indices between 0 and 10:');
 t=cputime;
 %kmax=7; per a transicions
-kmax=4;
+kmax=7;
 
 
 % disp(['Number of intervals in the mesh: ' num2str(length(meshData.h))]); % number of intervals in the mesh
@@ -156,6 +156,8 @@ function r=potentialMatrix(x) % returns the potential matrix evaluated in x
 
 [j]=parameters1;
 [s]=parameters3;
+
+r = zeros(3,3,4);
 
 if s==0
   for i=1:4 
