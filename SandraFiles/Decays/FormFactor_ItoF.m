@@ -1,3 +1,9 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%The update with all the possible transitions is missin!!!
+%s->s and s->d and p->p are updated with transitions including F1 and F-1
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % FITXER ACTUALITZAT després de l'error per falta d'un operador
 
 %All the form factors integrated
@@ -15,6 +21,7 @@ function res = FormFactor_ItoF(x)
         res = @StoStransF;
     elseif strcmp(x, 'QQS0toS0_Fc')
         res = @StoStransFC;
+        %
     elseif strcmp(x, 'QQP0toP0_F/')
         res = @P0toP0transF;
     elseif strcmp(x, 'QQP0toP0_Fc')
@@ -23,10 +30,19 @@ function res = FormFactor_ItoF(x)
         res = @P1toP1transF;
     elseif strcmp(x, 'QQP1toP1_Fc')
         res = @P1toP1transFC;
+    elseif strcmp(x, 'QQPNtoP0_F1')
+        res = @P1toP0transF1;
+    elseif strcmp(x, 'QQP1toP0_FN')
+        res = @P1toP0transFN;
+    elseif strcmp(x, 'QQP0toP1_F1')
+        res = @P0toP1transF1;
+    elseif strcmp(x, 'QQP0toPN_FN')
+        res = @P0toP1transFN;
     elseif strcmp(x, 'QQP1toP1_Fs')
         res = @P1toP1transFS;
     elseif strcmp(x, 'QQP1toP1_Fx')
         res = @P1toP1transFSX;
+        %
     elseif strcmp(x, 'QQD0toS0_F/')
         res = @D0toStransF;
     elseif strcmp(x, 'QQD0toS0_Fc')
@@ -35,6 +51,11 @@ function res = FormFactor_ItoF(x)
         res = @D2toStransFS;
     elseif strcmp(x, 'QQD2toS0_Fx')
         res = @D2toStransFSX;
+    elseif strcmp(x, 'QQD2toS0_F1')
+        res = @D2toStransF1;
+    elseif strcmp(x, 'QQD2toS0_FN')
+        res = @D2toStransFN;
+        %
     elseif strcmp(x, 'QQD0toD0_F/')
         res = @D0toD0transF;
     elseif strcmp(x, 'QQD0toD0_Fc')
@@ -172,6 +193,70 @@ B = -12 * (6 * r .* Sq .* cos((Sq / 2) .* r) + (-12 + r.^2 .* Sq^2) .* sin((Sq /
 FCpp11=A*B;
 end
 
+%F1 (l=1,m=-1 -> l=1,m=0)
+function F1ppN0=P1toP0transF1(x,Ei,Ef,M)
+% x is the system = r in the string
+% E=Ef-Ei of the trensition
+% M = dipion invariant mass
+E=Ef-Ei;
+Sq=sqrt(E^2-M^2);
+r=diag(x);
+%Aproximation
+%FCpp11=r/10 - (r^3 * Sq^2)/560;
+%Hole function
+A= diag(diag((1 ./ (r.^4 .* Sq.^5))));
+B = -12 * sqrt(2) * (6 * r .* Sq .* cos((Sq / 2) .* r) + (-12 + r.^2 .* Sq^2) .* sin((Sq / 2) .* r));
+F1ppN0=A*B;
+end
+
+%FN (l=1,m=+1 -> l=1,m=0)
+function FNpp10=P1toP0transFN(x,Ei,Ef,M)
+% x is the system = r in the string
+% E=Ef-Ei of the trensition
+% M = dipion invariant mass
+E=Ef-Ei;
+Sq=sqrt(E^2-M^2);
+r=diag(x);
+%Aproximation
+%FCpp11=r/10 - (r^3 * Sq^2)/560;
+%Hole function
+A= diag(diag((1 ./ (r.^4 .* Sq.^5))));
+B = 12 * sqrt(2) * (6 * r .* Sq .* cos((Sq / 2) .* r) + (-12 + r.^2 .* Sq^2) .* sin((Sq / 2) .* r));
+FNpp10=A*B;
+end
+
+%F1 (l=1,m=0 -> l=1,m=1)
+function F1pp01=P0toP1transF1(x,Ei,Ef,M)
+% x is the system = r in the string
+% E=Ef-Ei of the trensition
+% M = dipion invariant mass
+E=Ef-Ei;
+Sq=sqrt(E^2-M^2);
+r=diag(x);
+%Aproximation
+%FCpp11=r/10 - (r^3 * Sq^2)/560;
+%Hole function
+A= diag(diag((1 ./ (r.^4 .* Sq.^5))));
+B = 12 * sqrt(2) * (6 * r .* Sq .* cos((Sq / 2) .* r) + (-12 + r.^2 .* Sq^2) .* sin((Sq / 2) .* r));
+F1pp01=A*B;
+end
+
+%FN (l=1,m=+1 -> l=1,m=0)
+function FNpp0N=P0toP1transFN(x,Ei,Ef,M)
+% x is the system = r in the string
+% E=Ef-Ei of the trensition
+% M = dipion invariant mass
+E=Ef-Ei;
+Sq=sqrt(E^2-M^2);
+r=diag(x);
+%Aproximation
+%FCpp11=r/10 - (r^3 * Sq^2)/560;
+%Hole function
+A= diag(diag((1 ./ (r.^4 .* Sq.^5))));
+B = - 12 * sqrt(2) * (6 * r .* Sq .* cos((Sq / 2) .* r) + (-12 + r.^2 .* Sq^2) .* sin((Sq / 2) .* r));
+FNpp0N=A*B;
+end
+
 %Fs (l=1,m=-1 -> l=1,m=+1)
 function FSpp11=P1toP1transFS(x,Ei,Ef,M)
 % x is the system = r in the string
@@ -242,6 +327,39 @@ B = -2 * sqrt(5) * ( r .* Sq .* (-36 + r.^2 * Sq^2) .* cos((Sq / 2) .* r) ...
       - 8 * (-9 + r.^2 * Sq^2) .* sin((Sq / 2) .* r) );
 FCds00=A*B;
 end
+
+%F1 (l=2,m=-1 -> l=0,m=0)
+function F1dsN0=D2toStransF1(x,Ei,Ef,M)
+% x is the system = r in the string
+% E=Ef-Ei of the trensition
+% M = dipion invariant mass
+E=Ef-Ei;
+Sq=sqrt(E^2-M^2);
+r=diag(x);
+%Aproximation
+%FSds20= sqrt(2/15)*r -(r^3*Sq^2)/(84*sqrt(30));
+%Hole function
+A=diag(diag((1 ./ (r.^4 .* Sq.^5))));
+B = - 4* sqrt(30) *  (6 .* r .* Sq .* cos((Sq / 2) .* r) + (-12 + r.^2 .* Sq^2) .* sin((Sq / 2) .* r) );
+F1dsN0=A*B;
+end
+
+%FSX (l=2,m=1 -> l=0,m=0)
+function FNds10=D2toStransFN(x,Ei,Ef,M)
+% x is the system = r in the string
+% E=Ef-Ei of the trensition
+% M = dipion invariant mass
+E=Ef-Ei;
+Sq=sqrt(E^2-M^2);
+r=diag(x);
+%Aproximation
+%FSXds20= sqrt(2/15)*r -(r^3*Sq^2)/(84*sqrt(30));
+%Hole function
+A=diag(diag((1 ./ (r.^4 .* Sq.^5))));
+B = 4* sqrt(30) *  (6 .* r .* Sq .* cos((Sq / 2) .* r) + (-12 + r.^2 .* Sq^2) .* sin((Sq / 2) .* r) );
+FNds10=A*B;
+end
+
 
 %FS (l=2,m=-2 -> l=0,m=0)
 function FSds20=D2toStransFS(x,Ei,Ef,M)
