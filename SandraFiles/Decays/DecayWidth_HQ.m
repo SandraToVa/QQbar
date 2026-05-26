@@ -26,16 +26,18 @@ setm_q(m_c)
 
 %Change this depending on the transition
 
-ComputationIE = TransitionsAdded('HQp1tS');      
+ComputationIE = TransitionsAdded('HQsdtP');      
 
-[I_if_square_cell, DeltaE, M] = ComputationIE(2, 2, 0.28, 0.467, 50);
+[I_if_square_cell, DeltaE, M] = ComputationIE(3, 2, 0.28, 0.387, 50);
 
-file_name = 'GammaVSmass_HQcharm_1p1-2s.txt';
+%%
+
+file_name = 'GammaVSmass_HQbottom_2sd1-2p.txt';
 
 % Value of pion mass 140MeV
 m = 0.14;
 % Value of the global constant that divides everithing in GeV. Fpi=92MeV
-FracFpi = 1/(2^4 * pi * 0.092^4 * 0.187) * 4^2;
+FracFpi = 1/(pi * 0.092^4 * 0.187) * 4^2;
 %0.187GeV^2 is the string tension
 %4^2 per compensar que Ce=eta/4 i tenim eta^2
 
@@ -81,11 +83,12 @@ end
 % Now with each part of the gamma separated by parameters we define the
 % parameters computed with mathematica:
 % Each row is a set: [CE]  -> corresponds to [Ce]
+%Param sets obtingut al resoldre el sistema d'equacions
 param_sets = [
-    0.0534711;
-    0.115396;
-    -0.115396;
-    -0.0534711
+   -0.569395,  0.0413287,   0.0225432;
+   -0.566654, -0.00973277,  0.0730556;
+    0.566654,  0.00973277, -0.0730556;
+    0.569395, -0.0413287,  -0.0225432
 ];
 
 %Define a decaywidth matrix where each row is a gamma computed with the
@@ -97,7 +100,7 @@ for i = 1:num_valid
     DW = DW_values(i);
     
     for N = 1:4
-        CE = param_sets(N);
+        CE = param_sets(N,3);
         
         Gamma(N, i) = FracFpi * (CE^2 * DW);
     end
@@ -168,7 +171,7 @@ fprintf('Results saved to %s\n', full_path);
 function term = HQdecaywidthTerm1(I_if_01_square, I_if_0N_square, I_if_0N_10, ...
     I_if_01_N0, I_if_10_square, I_if_N0_square, m, M, DeltaE)
 
-    term = (1 / (15 * M^4)) * sqrt(DeltaE^2 - M^2)^3 * sqrt(1 - (4 * m^2) / (M^2)) ...
+    term = (1 / (240 * M^4)) * sqrt(DeltaE^2 - M^2)^3 * sqrt(1 - (4 * m^2) / (M^2)) ...
         * (M^2 * (M^2 - 4*m^2)^2 ) * ( 2*I_if_01_square + 2*I_if_0N_square - 2*sqrt(2)*I_if_0N_10 ...
         + 2*sqrt(2)*I_if_01_N0 + I_if_10_square + I_if_N0_square ) ;
 
@@ -176,7 +179,7 @@ end
 
 function term = HQdecaywidthTerm2(I_if_11_square, I_if_NN_square, I_if_11_NN, m, M, DeltaE)
 
-    term = (1 / (15 * M^4)) * sqrt(DeltaE^2 - M^2)^3 * sqrt(1 - (4 * m^2) / (M^2)) ...
+    term = (1 / (240 * M^4)) * sqrt(DeltaE^2 - M^2)^3 * sqrt(1 - (4 * m^2) / (M^2)) ...
         * (8 *(I_if_11_square + I_if_NN_square + 2*I_if_11_NN) * (6*m^4 + 2*m^2*M^2 + M^4) * DeltaE^2 ) ;
 
 end
