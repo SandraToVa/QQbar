@@ -1,6 +1,8 @@
 %Special sandwitches for the trensition of 1p1 to 2s using the full
 %expression with g4+g5 terms
 
+%Also includes the terms for the (s/d)1 to p transition
+
 %This file is equibalent to the hibrid_ItoF and Transitions added
 %alltogeder only for thet special transiction
 
@@ -12,6 +14,8 @@ function res = TransitionsP1toS(x)
 
     if strcmp(x, 'HQp1tS_full')
         res = @P1toStransFULL;
+    elseif strcmp(x, 'HQsdtP_full')
+        res = @SD1toPtransFULL;
 
     end
     disp(['Output function handle: ', func2str(res)]);
@@ -37,13 +41,14 @@ M = Min:nM:Mfin;
 % Initialize variables
 I_Cos_cell = cell(1, 1);
 I_Sin_cell = cell(1, 3);
-I_Si_cell = cell(1, 4);
+I_Si_cell = cell(1, 5);
 
 %Sandwitches that we need
 I_Cos_R3 = zeros(1, k + 1);
 I_Sin_R2 = zeros(1, k + 1);
 I_Sin_R3 = zeros(1, k + 1);
 I_Sin_R4 = zeros(1, k + 1);
+I_Si_R0 = zeros(1, k + 1);
 I_Si_R1 = zeros(1, k + 1);
 I_Si_R2 = zeros(1, k + 1);
 I_Si_R3 = zeros(1, k + 1);
@@ -62,6 +67,7 @@ ExpValFunc = ExpValFunctions('HQ');
 [I_Sin_R2(1), ~] = ExpValFunc(Nin, Nfin, M(1), @Hp1toQstrans_sin2, 1, 0, false);
 [I_Sin_R3(1), ~] = ExpValFunc(Nin, Nfin, M(1), @Hp1toQstrans_sin3, 1, 0, false);
 [I_Sin_R4(1), ~] = ExpValFunc(Nin, Nfin, M(1), @Hp1toQstrans_sin4, 1, 0, false);
+[I_Si_R0(1), ~] = ExpValFunc(Nin, Nfin, M(1), @Hp1toQstrans_si0, 1, 0, false);
 [I_Si_R1(1), ~] = ExpValFunc(Nin, Nfin, M(1), @Hp1toQstrans_si1, 1, 0, false);
 [I_Si_R2(1), ~] = ExpValFunc(Nin, Nfin, M(1), @Hp1toQstrans_si2, 1, 0, false);
 [I_Si_R3(1), ~] = ExpValFunc(Nin, Nfin, M(1), @Hp1toQstrans_si3, 1, 0, false);
@@ -73,6 +79,7 @@ for n = 2:k+1
     [I_Sin_R2(n), ~] = ExpValFunc(Nin, Nfin, M(n), @Hp1toQstrans_sin2, 1, 0, false);
     [I_Sin_R3(n), ~] = ExpValFunc(Nin, Nfin, M(n), @Hp1toQstrans_sin3, 1, 0, false);
     [I_Sin_R4(n), ~] = ExpValFunc(Nin, Nfin, M(n), @Hp1toQstrans_sin4, 1, 0, false);
+    [I_Si_R0(n), ~] = ExpValFunc(Nin, Nfin, M(n), @Hp1toQstrans_si0, 1, 0, false);
     [I_Si_R1(n), ~] = ExpValFunc(Nin, Nfin, M(n), @Hp1toQstrans_si1, 1, 0, false);
     [I_Si_R2(n), ~] = ExpValFunc(Nin, Nfin, M(n), @Hp1toQstrans_si2, 1, 0, false);
     [I_Si_R3(n), ~] = ExpValFunc(Nin, Nfin, M(n), @Hp1toQstrans_si3, 1, 0, false);
@@ -94,13 +101,98 @@ I_Si_cell{1, 1} = I_Si_R1;
 I_Si_cell{1, 2} = I_Si_R2;
 I_Si_cell{1, 3} = I_Si_R3;
 I_Si_cell{1, 4} = I_Si_R4;
+I_Si_cell{1, 5} = I_Si_R0;
 
 % Return E as a single scalar if consistent
 DeltaE = E(1);
 
 end
 
-% PART OF THE FUNCTIONS
+
+% (s/d)1 -> p (SPECIAL CASE)
+function [I_Cos_cell, I_Sin_cell, I_Si_cell, DeltaE, M] = SD1toPtransFULL(Nin, Nfin, Min, Mfin, length)
+
+k = length;
+
+% Dipion mass row
+nM = (Mfin - Min) / k;
+M = Min:nM:Mfin;
+
+% Initialize variables
+I_Cos_cell = cell(1, 1);
+I_Sin_cell = cell(1, 3);
+I_Si_cell = cell(1, 5);
+
+%Sandwitches that we need
+I_Cos_R3 = zeros(1, k + 1);
+I_Sin_R2 = zeros(1, k + 1);
+I_Sin_R3 = zeros(1, k + 1);
+I_Sin_R4 = zeros(1, k + 1);
+I_Si_R1 = zeros(1, k + 1);
+I_Si_R2 = zeros(1, k + 1);
+I_Si_R3 = zeros(1, k + 1);
+I_Si_R4 = zeros(1, k + 1);
+I_Si_R0 = zeros(1, k + 1);
+
+
+
+E = zeros(1, k + 1);
+
+% Precompute ExpValFunc
+
+ExpValFunc = ExpValFunctions('HQ');
+
+
+% Compute first E value and check if consistent
+[I_Cos_R3(1), E(1)] = ExpValFunc(Nin, Nfin, M(1), @Hsd1toQstrans_cos3, 1, 1, true);
+[I_Sin_R2(1), ~] = ExpValFunc(Nin, Nfin, M(1), @Hsd1toQstrans_sin2, 1, 1, true);
+[I_Sin_R3(1), ~] = ExpValFunc(Nin, Nfin, M(1), @Hsd1toQstrans_sin3, 1, 1, true);
+[I_Sin_R4(1), ~] = ExpValFunc(Nin, Nfin, M(1), @Hsd1toQstrans_sin4, 1, 1, true);
+[I_Si_R1(1), ~] = ExpValFunc(Nin, Nfin, M(1), @Hsd1toQstrans_si1, 1, 1, true);
+[I_Si_R2(1), ~] = ExpValFunc(Nin, Nfin, M(1), @Hsd1toQstrans_si2, 1, 1, true);
+[I_Si_R3(1), ~] = ExpValFunc(Nin, Nfin, M(1), @Hsd1toQstrans_si3, 1, 1, true);
+[I_Si_R4(1), ~] = ExpValFunc(Nin, Nfin, M(1), @Hsd1toQstrans_si4, 1, 1, true);
+[I_Si_R0(1), ~] = ExpValFunc(Nin, Nfin, M(1), @Hsd1toQstrans_si0, 1, 1, true);
+
+% Fill the rest of the arrays
+for n = 2:k+1
+    [I_Cos_R3(n), E(n)] = ExpValFunc(Nin, Nfin, M(n), @Hsd1toQstrans_cos3, 1, 1, true);
+    [I_Sin_R2(n), ~] = ExpValFunc(Nin, Nfin, M(n), @Hsd1toQstrans_sin2, 1, 1, true);
+    [I_Sin_R3(n), ~] = ExpValFunc(Nin, Nfin, M(n), @Hsd1toQstrans_sin3, 1, 1, true);
+    [I_Sin_R4(n), ~] = ExpValFunc(Nin, Nfin, M(n), @Hsd1toQstrans_sin4, 1, 1, true);
+    [I_Si_R1(n), ~] = ExpValFunc(Nin, Nfin, M(n), @Hsd1toQstrans_si1, 1, 1, true);
+    [I_Si_R2(n), ~] = ExpValFunc(Nin, Nfin, M(n), @Hsd1toQstrans_si2, 1, 1, true);
+    [I_Si_R3(n), ~] = ExpValFunc(Nin, Nfin, M(n), @Hsd1toQstrans_si3, 1, 1, true);
+    [I_Si_R4(n), ~] = ExpValFunc(Nin, Nfin, M(n), @Hsd1toQstrans_si4, 1, 1, true);
+    [I_Si_R0(n), ~] = ExpValFunc(Nin, Nfin, M(n), @Hsd1toQstrans_si0, 1, 1, true);
+
+
+    % Check if E is constant
+    if E(n) ~= E(1)
+        error('E values are not consistent across iterations.');
+    end
+end
+
+
+% Store in cell array
+I_Cos_cell{1, 1} = I_Cos_R3;
+I_Sin_cell{1, 1} = I_Sin_R2;
+I_Sin_cell{1, 2} = I_Sin_R3;
+I_Sin_cell{1, 3} = I_Sin_R4;
+I_Si_cell{1, 1} = I_Si_R1;
+I_Si_cell{1, 2} = I_Si_R2;
+I_Si_cell{1, 3} = I_Si_R3;
+I_Si_cell{1, 4} = I_Si_R4;
+I_Si_cell{1, 5} = I_Si_R0;
+
+% Return E as a single scalar if consistent
+DeltaE = E(1);
+
+end
+
+
+% PART OF THE FUNCTIONS works for both p1 and (s/d)1
+%but for s and d we will work them separatedly and then together
 %We write the functions that will be sandwitched
 
 %Trans p1 -> s : cos/r^3
@@ -117,6 +209,26 @@ vector = cos(0.5 .* r_vec .* Sq) ./ (r_vec.^3) ;
 matrix = diag(vector);
 
 Hp1s_cos3 = matrix;
+
+end
+
+%Trans (s/d)1 -> p : cos/r^3
+function Hsd1p_cos3=Hsd1toQstrans_cos3(x,Ei,Ef,M)
+% x is the system = r in the string
+% E=Ef-Ei of the trensition
+% M = dipion invariant mass
+E=Ef-Ei;
+Sq=sqrt(E^2-M^2);
+r_vec=x;
+len = length(x);
+Hsd1p_cos3 = zeros(len,len,2);
+
+vector = cos(0.5 .* r_vec .* Sq) ./ (r_vec.^3) ;
+
+matrix = diag(vector);
+
+Hsd1p_cos3(:,:,1) = matrix;
+Hsd1p_cos3(:,:,2) = matrix ./ 2;
 
 end
 
@@ -137,6 +249,26 @@ Hp1s_sin2 = matrix;
 
 end
 
+%Trans (s/d)1 -> p : sin/r^2
+function Hsd1p_sin2=Hsd1toQstrans_sin2(x,Ei,Ef,M)
+% x is the system = r in the string
+% E=Ef-Ei of the trensition
+% M = dipion invariant mass
+E=Ef-Ei;
+Sq=sqrt(E^2-M^2);
+r_vec=x;
+len = length(x);
+Hsd1p_sin2 = zeros(len,len,2);
+
+vector = sin(0.5 .* r_vec .* Sq) ./ (r_vec.^2) ;
+
+matrix = diag(vector);
+
+Hsd1p_sin2(:,:,1) = matrix;
+Hsd1p_sin2(:,:,2) = matrix ./ 2;
+
+end
+
 %Trans p1 -> s : sin/r^3
 function Hp1s_sin3=Hp1toQstrans_sin3(x,Ei,Ef,M)
 % x is the system = r in the string
@@ -151,6 +283,26 @@ vector = sin(0.5 .* r_vec .* Sq) ./ (r_vec.^3) ;
 matrix = diag(vector);
 
 Hp1s_sin3 = matrix;
+
+end
+
+%Trans (s/d)1 -> p : sin/r^3
+function Hsd1p_sin3=Hsd1toQstrans_sin3(x,Ei,Ef,M)
+% x is the system = r in the string
+% E=Ef-Ei of the trensition
+% M = dipion invariant mass
+E=Ef-Ei;
+Sq=sqrt(E^2-M^2);
+r_vec=x;
+len = length(x);
+Hsd1p_sin3 = zeros(len,len,2);
+
+vector = sin(0.5 .* r_vec .* Sq) ./ (r_vec.^3) ;
+
+matrix = diag(vector);
+
+Hsd1p_sin3(:,:,1) = matrix;
+Hsd1p_sin3(:,:,2) = matrix ./ 2;
 
 end
 
@@ -171,6 +323,64 @@ Hp1s_sin4 = matrix;
 
 end
 
+%Trans (s/d)1 -> p : sin/r^4
+function Hsd1p_sin4=Hsd1toQstrans_sin4(x,Ei,Ef,M)
+% x is the system = r in the string
+% E=Ef-Ei of the trensition
+% M = dipion invariant mass
+E=Ef-Ei;
+Sq=sqrt(E^2-M^2);
+r_vec=x;
+len = length(x);
+Hsd1p_sin4 = zeros(len,len,2);
+
+vector = sin(0.5 .* r_vec .* Sq) ./ (r_vec.^4) ;
+
+matrix = diag(vector);
+
+Hsd1p_sin4(:,:,1) = matrix;
+Hsd1p_sin4(:,:,2) = matrix ./ 2;
+
+end
+
+%Trans p1 -> s : (si - si)
+function Hp1s_si0=Hp1toQstrans_si0(x,Ei,Ef,M)
+% x is the system = r in the string
+% E=Ef-Ei of the trensition
+% M = dipion invariant mass
+E=Ef-Ei;
+Sq=sqrt(E^2-M^2);
+r_vec=x;
+
+vector = ( sinint(0.5 .* (pi - r_vec .* Sq)) - sinint(0.5 .* (pi + r_vec .* Sq)) ) ;
+
+matrix = diag(vector);
+
+Hp1s_si0 = matrix;
+
+end
+
+%Trans (s/d)1 -> p : (si - si)
+function Hsd1p_si0=Hsd1toQstrans_si0(x,Ei,Ef,M)
+% x is the system = r in the string
+% E=Ef-Ei of the trensition
+% M = dipion invariant mass
+E=Ef-Ei;
+Sq=sqrt(E^2-M^2);
+r_vec=x;
+len = length(x);
+Hsd1p_si0 = zeros(len,len,2);
+
+vector = ( sinint(0.5 .* (pi - r_vec .* Sq)) - sinint(0.5 .* (pi + r_vec .* Sq)) )  ;
+
+matrix = diag(vector);
+
+Hsd1p_si0(:,:,1) = matrix;
+Hsd1p_si0(:,:,2) = matrix ./ 2;
+
+end
+
+
 %Trans p1 -> s : (si - si)/r
 function Hp1s_si1=Hp1toQstrans_si1(x,Ei,Ef,M)
 % x is the system = r in the string
@@ -185,6 +395,26 @@ vector = ( sinint(0.5 .* (pi - r_vec .* Sq)) - sinint(0.5 .* (pi + r_vec .* Sq))
 matrix = diag(vector);
 
 Hp1s_si1 = matrix;
+
+end
+
+%Trans (s/d)1 -> p : (si - si)/r
+function Hsd1p_si1=Hsd1toQstrans_si1(x,Ei,Ef,M)
+% x is the system = r in the string
+% E=Ef-Ei of the trensition
+% M = dipion invariant mass
+E=Ef-Ei;
+Sq=sqrt(E^2-M^2);
+r_vec=x;
+len = length(x);
+Hsd1p_si1 = zeros(len,len,2);
+
+vector = ( sinint(0.5 .* (pi - r_vec .* Sq)) - sinint(0.5 .* (pi + r_vec .* Sq)) ) ./ (r_vec) ;
+
+matrix = diag(vector);
+
+Hsd1p_si1(:,:,1) = matrix;
+Hsd1p_si1(:,:,2) = matrix ./ 2;
 
 end
 
@@ -205,6 +435,26 @@ Hp1s_si2 = matrix;
 
 end
 
+%Trans (s/d)1 -> p : (si - si)/r^2
+function Hsd1p_si2=Hsd1toQstrans_si2(x,Ei,Ef,M)
+% x is the system = r in the string
+% E=Ef-Ei of the trensition
+% M = dipion invariant mass
+E=Ef-Ei;
+Sq=sqrt(E^2-M^2);
+r_vec=x;
+len = length(x);
+Hsd1p_si2 = zeros(len,len,2);
+
+vector = ( sinint(0.5 .* (pi - r_vec .* Sq)) - sinint(0.5 .* (pi + r_vec .* Sq)) ) ./ (r_vec.^2) ;
+
+matrix = diag(vector);
+
+Hsd1p_si2(:,:,1) = matrix;
+Hsd1p_si2(:,:,2) = matrix ./ 2;
+
+end
+
 %Trans p1 -> s : (si - si)/r^3
 function Hp1s_si3=Hp1toQstrans_si3(x,Ei,Ef,M)
 % x is the system = r in the string
@@ -222,6 +472,26 @@ Hp1s_si3 = matrix;
 
 end
 
+%Trans p1 -> s : (si - si)/r^3
+function Hsd1p_si3=Hsd1toQstrans_si3(x,Ei,Ef,M)
+% x is the system = r in the string
+% E=Ef-Ei of the trensition
+% M = dipion invariant mass
+E=Ef-Ei;
+Sq=sqrt(E^2-M^2);
+r_vec=x;
+len = length(x);
+Hsd1p_si3 = zeros(len,len,2);
+
+vector = ( sinint(0.5 .* (pi - r_vec .* Sq)) - sinint(0.5 .* (pi + r_vec .* Sq)) ) ./ (r_vec.^3) ;
+
+matrix = diag(vector);
+
+Hsd1p_si3(:,:,1) = matrix;
+Hsd1p_si3(:,:,2) = matrix ./ 2;
+
+end
+
 %Trans p1 -> s : (si - si)/r^4
 function Hp1s_si4=Hp1toQstrans_si4(x,Ei,Ef,M)
 % x is the system = r in the string
@@ -236,5 +506,25 @@ vector = ( sinint(0.5 .* (pi - r_vec .* Sq)) - sinint(0.5 .* (pi + r_vec .* Sq))
 matrix = diag(vector);
 
 Hp1s_si4 = matrix;
+
+end
+
+%Trans (s/d)1 -> p : (si - si)/r^4
+function Hsd1p_si4=Hsd1toQstrans_si4(x,Ei,Ef,M)
+% x is the system = r in the string
+% E=Ef-Ei of the trensition
+% M = dipion invariant mass
+E=Ef-Ei;
+Sq=sqrt(E^2-M^2);
+r_vec=x;
+len = length(x);
+Hsd1p_si4 = zeros(len,len,2);
+
+vector = ( sinint(0.5 .* (pi - r_vec .* Sq)) - sinint(0.5 .* (pi + r_vec .* Sq)) ) ./ (r_vec.^4) ;
+
+matrix = diag(vector);
+
+Hsd1p_si4(:,:,1) = matrix;
+Hsd1p_si4(:,:,2) = matrix ./ 2;
 
 end
