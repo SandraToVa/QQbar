@@ -1,4 +1,12 @@
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%The update with all the possible transitions is missin!!!
+%s->s and s->d/d->s are updated with transitions including F1 and F-1
+%and follow the notation of T(l'm',lm)
+%p->p is very diferent that the other cases for s=1 (d->d if i ever do it should
+%be the same)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %IMPORTANT: This code is updated (only the quarkonium part) with the 
 % inclusion of the new operator
 
@@ -58,7 +66,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % s->s
-function [I_if_square_cell, DeltaE, M] = StoStrans(Nin, Nfin, Min, Mfin, length)
+function [I_if_square_cell, DeltaE, M] = StoStrans(Nin, Nfin, Min, Mfin, length, spin)
 
 k = length;
 
@@ -67,10 +75,11 @@ nM = (Mfin - Min) / k;
 M = Min:nM:Mfin;
 
 % Initialize variables
-I_if_square_cell = cell(1, 4);
+I_if_square_cell = cell(1, 5);
 %I_if_square = zeros(1, k + 1);
 %I_if_c_square = zeros(1, k + 1);
 %I_if_0c_square = zeros(1, k + 1);
+I_if_1_square = zeros(1, k + 1);
 I_if_s_square = zeros(1, k + 1);
 %m=0
 I_if0 = zeros(1, k + 1);
@@ -100,17 +109,25 @@ for n = 2:k+1
     end
 end
 
-% Compute spin average = com nomes hi ha 1 m possible per a la transicio
-%directament per a cada
-I_if_square = I_if0.^2;
-I_if_c_square = I_if_c0.^2;
-I_if_0c_square = I_if0 .* I_if_c0;
+% Compute spin average trivial in this case
+if spin == 0
+    I_if_square = I_if0.^2;
+    I_if_c_square = I_if_c0.^2;
+    I_if_0c_square = I_if0 .* I_if_c0;
+
+elseif spin == 1
+    I_if_square = I_if0.^2;
+    I_if_c_square = I_if_c0.^2;
+    I_if_0c_square = I_if0 .* I_if_c0;
+
+end
 
 % Store in cell array
 I_if_square_cell{1, 1} = I_if_square;
 I_if_square_cell{1, 2} = I_if_c_square;
 I_if_square_cell{1, 3} = I_if_0c_square;
-I_if_square_cell{1, 4} = I_if_s_square;
+I_if_square_cell{1, 4} = I_if_1_square;
+I_if_square_cell{1, 5} = I_if_s_square;
 
 % Return E as a single scalar if consistent
 DeltaE = E(1);
@@ -119,7 +136,11 @@ end
 
 
 % p->p
-function [I_if_square_cell, DeltaE, M] = PtoPtrans(Nin, Nfin, Min, Mfin, length)
+%This case is VERY DIFFERENT from the cases above for s=1. In here i do not obtain
+%the I_if_squared but the non squared ersion instead!!!!
+%This procedure is the one to use for p->p and d->d to be albe to correctly
+%do the spin average!
+function [I_if_cell, DeltaE, M] = PtoPtrans(Nin, Nfin, Min, Mfin, length, spin)
 
 k = length;
 
@@ -128,7 +149,7 @@ nM = (Mfin - Min) / k;
 M = Min:nM:Mfin;
 
 % Initialize variables
-I_if_square_cell = cell(1, 4);
+I_if_cell = cell(1, 6);
 %I_if_square = zeros(1, k + 1);
 %I_if_c_square = zeros(1, k + 1);
 %I_if_0c_square = zeros(1, k + 1);
@@ -139,14 +160,19 @@ I_if_c0 = zeros(1, k + 1);
 %m=1
 I_if1=zeros(1,k+1);
 I_if_c1=zeros(1,k+1);
+I_if_1=zeros(1,k+1); %same for alll the transitions involving F1 and FN (4 transitions in total)
 I_if_s1=zeros(1,k+1);
 
 E = zeros(1, k + 1);
 
 % Precompute ExpValFunc
-% 3 contributions: m=0->m'=0, m=1->m'=1 (estes dos son la mateixa)
-% m=-1->m'=-1 for the I, Ic form factors. We will ned a spin average
-% (sumatori sobre estats finals i average sobre inicals)
+% 4 contributions: 
+% - m=0->m'=0 for the I, Ic form factors. 
+% - m=1->m'=1 / m=-1->m'=-1 for the I, Ic form factors. 
+% - m=+1->m'=0 / m=0->m'=-1 for the I1, IN form factors respectively
+% - m=-1->m'=0 / m=0->m'=1 for the IN, I1 form factors respectively (same
+% as above)
+% - m=+1->m'=-1 / m=-1->m'=-1 for the Is, Isx form factors. 
 
 % 1 contribution: m=+1->m'=-1 for the Ix and the same m=-1->m'=+1 for the
 % Is case
@@ -157,7 +183,8 @@ transitionC0=FormFactor_ItoF('QQP0toP0_Fc');
 %m=1
 transition1=FormFactor_ItoF('QQP1toP1_F/');
 transitionC1=FormFactor_ItoF('QQP1toP1_Fc');
-transitionS1=FormFactor_TtoF('QQP1toP1_Fs');
+transitionN1=FormFactor_ItoF('QQP1toP0_FN'); %same for all 4 transitions
+transitionS1=FormFactor_ItoF('QQP1toP1_Fs');
 
 
 % Compute first E value and check if consistent
@@ -165,6 +192,7 @@ transitionS1=FormFactor_TtoF('QQP1toP1_Fs');
 [I_if_c0(1), ~] = ExpValFunc(Nin, Nfin, M(1), transitionC0, 1, 1);
 [I_if1(1), ~] = ExpValFunc(Nin, Nfin, M(1), transition1, 1, 1);
 [I_if_c1(1), ~] = ExpValFunc(Nin, Nfin, M(1), transitionC1, 1, 1);
+[I_if_1(1), ~] = ExpValFunc(Nin, Nfin, M(1), transitionN1, 1, 1);
 [I_if_s1(1), ~] = ExpValFunc(Nin, Nfin, M(1), transitionS1, 1, 1);
 
 
@@ -174,6 +202,7 @@ for n = 2:k+1
     [I_if_c0(n), ~] = ExpValFunc(Nin, Nfin, M(n), transitionC0, 1, 1);
     [I_if1(n), ~] = ExpValFunc(Nin, Nfin, M(n), transition1, 1, 1);
     [I_if_c1(n), ~] = ExpValFunc(Nin, Nfin, M(n), transitionC1, 1, 1);
+    [I_if_1(n), ~] = ExpValFunc(Nin, Nfin, M(n), transitionN1, 1, 1);
     [I_if_s1(n), ~] = ExpValFunc(Nin, Nfin, M(n), transitionS1, 1, 1);
 
     % Check if E is constant
@@ -182,18 +211,36 @@ for n = 2:k+1
     end
 end
 
-% Compute spin average = com nomes hi ha 1 m possible per a la transicio
-%directament per a cada
-I_if_square = (I_if0.^2 + 2*I_if1.^2) / 3; % *2 because trans from +-1 to +-1
-I_if_c_square = (I_if_c0.^2 + 2*I_if_c1.^2) / 3;
-I_if_0c_square = (I_if0 .* I_if_c0 + 2*I_if1 .* I_if_c1) / 3;
-I_if_s_square = (2*I_if_s1.^2) / 3; % *2 because trans from +-1 to -+1
+%if spin = 0 we do more or less the same as above
+if spin == 0
+    %spin average
+    I_if_square = ( I_if0.^2 + 2.* I_if1.^2) ./ 3;
+    I_if_c_square = ( I_if_c0.^2 + 2.* I_if_c1.^2 ) ./ 3;
+    I_if_0c_square = ( I_if0 .* I_if_c0 + 2.* I_if1 .* I_if_c1 ) ./ 3; %2 same contributions for transitions m=1->m'=-1 and m=-1->m'=-1
+    I_if_1_square = (I_if_1.^2 ) .* (4/3); %4 comes from all possible transitions involved
+    I_if_s_square = (I_if_s1.^2 ) .* (2/3); %2 comes from all possible transitions involved
 
-% Store in cell array
-I_if_square_cell{1, 1} = I_if_square;
-I_if_square_cell{1, 2} = I_if_c_square;
-I_if_square_cell{1, 3} = I_if_0c_square;
-I_if_square_cell{1, 4} = I_if_s_square;
+    % Store in cell array
+    I_if_cell{1, 1} = I_if_square;
+    I_if_cell{1, 2} = I_if_c_square;
+    I_if_cell{1, 3} = I_if_0c_square;
+    I_if_cell{1, 4} = I_if_1_square;
+    I_if_cell{1, 5} = I_if_s_square;
+    I_if_cell{1, 6} = zeros(1, k + 1);
+
+
+elseif spin == 1
+    % The spin average is not done here but done in the program DecayWidth_PP
+    %Very different form the s=0 case
+    I_if_cell{1, 1} = I_if0;
+    I_if_cell{1, 2} = I_if_c0;
+    I_if_cell{1, 3} = I_if1;
+    I_if_cell{1, 4} = I_if_c1;
+    I_if_cell{1, 5} = I_if_1;
+    I_if_cell{1, 6} = I_if_s1;
+
+end
+
 
 % Return E as a single scalar if consistent
 DeltaE = E(1);  
@@ -202,7 +249,7 @@ end
 
 
 % d->s
-function [I_if_square_cell, DeltaE, M] = DtoStrans(Nin, Nfin, Min, Mfin, length)
+function [I_if_square_cell, DeltaE, M] = DtoStrans(Nin, Nfin, Min, Mfin, length, spin)
 
 k = length;
 
@@ -211,7 +258,7 @@ nM = (Mfin - Min) / k;
 M = Min:nM:Mfin;
 
 % Initialize variables
-I_if_square_cell = cell(1, 4);
+I_if_square_cell = cell(1, 5);
 %I_if_square = zeros(1, k + 1);
 %I_if_c_square = zeros(1, k + 1);
 %I_if_0c_square = zeros(1, k + 1);
@@ -219,6 +266,8 @@ I_if_square_cell = cell(1, 4);
 %m=0
 I_if0 = zeros(1, k + 1);
 I_if_c0 = zeros(1, k + 1);
+%m=1
+I_if_1 = zeros(1, k + 1);
 %m=2
 I_if_s2 = zeros(1, k + 1);
 
@@ -232,18 +281,22 @@ ExpValFunc = ExpValFunctions('QQ');
 %m=0
 transition0 = FormFactor_ItoF('QQD0toS0_F/');
 transitionC0 = FormFactor_ItoF('QQD0toS0_Fc');
+%m=1
+transition1 = FormFactor_ItoF('QQD2toS0_F1');
 %m=2
 transitionS2 = FormFactor_ItoF('QQD2toS0_Fs');
 
 % Compute first E value and check if consistent
 [I_if0(1), E(1)] = ExpValFunc(Nin, Nfin, M(1), transition0, 2, 0);
 [I_if_c0(1), ~] = ExpValFunc(Nin, Nfin, M(1), transitionC0, 2, 0);
+[I_if_1(1), ~] = ExpValFunc(Nin, Nfin, M(1), transition1, 2, 0);
 [I_if_s2(1), ~] = ExpValFunc(Nin, Nfin, M(1), transitionS2, 2, 0);
 
 % Fill the rest of the arrays
 for n = 2:k+1
     [I_if0(n), E(n)] = ExpValFunc(Nin, Nfin, M(n), transition0, 2, 0);
     [I_if_c0(n), ~] = ExpValFunc(Nin, Nfin, M(n), transitionC0, 2, 0);
+    [I_if_1(n), ~] = ExpValFunc(Nin, Nfin, M(n), transition1, 2, 0);
     [I_if_s2(n), ~] = ExpValFunc(Nin, Nfin, M(n), transitionS2, 2, 0);
 
 
@@ -253,19 +306,33 @@ for n = 2:k+1
     end
 end
 
+% Compute spin average trivial in this case
+if spin == 0
+    I_if_square = I_if0.^2;
+    I_if_c_square = I_if_c0.^2;
+    I_if_0c_square = I_if0 .* I_if_c0;
+    I_if_1_square = I_if_1.^2;
+    I_if_s_square = I_if_s2.^2;
 
-% Compute el spin average = com nomes hi ha 1 m possible per a la transicio
-%directament per a cada
-I_if_square = (I_if0.^2) / 5;
-I_if_c_square = (I_if_c0.^2) / 5;
-I_if_0c_square = (I_if0 .* I_if_c0) / 5;
-I_if_s_square = (I_if_s2.^2) / 5;
+elseif spin == 1
+    % from 1--, 2--, 3-- to s: sa=1/5
+    sa=1/5;
+    I_if_square = sa .* I_if0.^2;
+    I_if_c_square = sa .* I_if_c0.^2;
+    I_if_0c_square = sa .* I_if0 .* I_if_c0;
+    I_if_1_square = sa .* I_if_1.^2;
+    I_if_s_square = sa .* I_if_s2.^2;
+
+end
+
+
 
 % Store in cell array
 I_if_square_cell{1, 1} = I_if_square;
 I_if_square_cell{1, 2} = I_if_c_square;
 I_if_square_cell{1, 3} = I_if_0c_square;
-I_if_square_cell{1, 4} = I_if_s_square;
+I_if_square_cell{1, 4} = I_if_1_square;
+I_if_square_cell{1, 5} = I_if_s_square;
 
 % Return E as a single scalar if consistent
 DeltaE = E(1);  
@@ -274,7 +341,7 @@ end
 
 
 % s->d
-function [I_if_square_cell, DeltaE, M] = StoDtrans(Nin, Nfin, Min, Mfin, length)
+function [I_if_square_cell, DeltaE, M] = StoDtrans(Nin, Nfin, Min, Mfin, length, spin)
 
 k = length;
 
@@ -283,7 +350,7 @@ nM = (Mfin - Min) / k;
 M = Min:nM:Mfin;
 
 % Initialize variables
-I_if_square_cell = cell(1, 4);
+I_if_square_cell = cell(1, 5);
 %I_if_square = zeros(1, k + 1);
 %I_if_c_square = zeros(1, k + 1);
 %I_if_0c_square = zeros(1, k + 1);
@@ -291,6 +358,8 @@ I_if_square_cell = cell(1, 4);
 %m=0
 I_if0 = zeros(1, k + 1);
 I_if_c0 = zeros(1, k + 1);
+%m=1
+I_if_1 = zeros(1, k + 1);
 %m=2
 I_if_s2 = zeros(1, k + 1);
 
@@ -304,18 +373,22 @@ ExpValFunc = ExpValFunctions('QQ');
 %m=0
 transition0 = FormFactor_ItoF('QQD0toS0_F/');
 transitionC0 = FormFactor_ItoF('QQD0toS0_Fc');
+%m=1
+transition1 = FormFactor_ItoF('QQD2toS0_F1');
 %m=2
 transitionS2 = FormFactor_ItoF('QQD2toS0_Fs');
 
 % Compute first E value and check if consistent
 [I_if0(1), E(1)] = ExpValFunc(Nin, Nfin, M(1), transition0, 0, 2);
 [I_if_c0(1), ~] = ExpValFunc(Nin, Nfin, M(1), transitionC0, 0, 2);
+[I_if_1(1), ~] = ExpValFunc(Nin, Nfin, M(1), transition1, 0, 2);
 [I_if_s2(1), ~] = ExpValFunc(Nin, Nfin, M(1), transitionS2, 0, 2);
 
 % Fill the rest of the arrays
 for n = 2:k+1
     [I_if0(n), E(n)] = ExpValFunc(Nin, Nfin, M(n), transition0, 0, 2);
     [I_if_c0(n), ~] = ExpValFunc(Nin, Nfin, M(n), transitionC0, 0, 2);
+    [I_if_1(n), ~] = ExpValFunc(Nin, Nfin, M(n), transition1, 0, 2);
     [I_if_s2(n), ~] = ExpValFunc(Nin, Nfin, M(n), transitionS2, 0, 2);
 
 
@@ -325,27 +398,34 @@ for n = 2:k+1
     end
 end
 
+% Compute spin average choose the case
+if spin == 0
+    I_if_square = I_if0.^2;
+    I_if_c_square = I_if_c0.^2;
+    I_if_0c_square = I_if0 .* I_if_c0;
+    I_if_1_square = I_if_1.^2;
+    I_if_s_square = I_if_s2.^2;
 
-% Compute el spin average = com nomes hi ha 1 m possible per a la transicio
-%directament per a cada
-%For spin =0
-I_if_square = (I_if0.^2);
-I_if_c_square = (I_if_c0.^2);
-I_if_0c_square = (I_if0 .* I_if_c0);
-I_if_s_square = (I_if_s2.^2);
+elseif spin == 1
+    % from s to 1--: sa=1/5
+    % from s to 2--: sa=1/3
+    % from s to 3--: sa=7/15
+    sa=1/3;
+    I_if_square = sa .* I_if0.^2;
+    I_if_c_square = sa .* I_if_c0.^2;
+    I_if_0c_square = sa .* I_if0 .* I_if_c0;
+    I_if_1_square = sa .* I_if_1.^2;
+    I_if_s_square = sa .* I_if_s2.^2;
 
-%For spin = 1
-%I_if_square = (2*(1/2)*I_if0.^2)/3;
-%I_if_c_square = (I_if_c0.^2)/3;
-%I_if_0c_square = (I_if0 .* I_if_c0)/3;
-%I_if_s_square = ((2/3)*I_if_s2.^2 + (1/3)*I_if_s2.^2)/3;
+end
 
 
 % Store in cell array
 I_if_square_cell{1, 1} = I_if_square;
 I_if_square_cell{1, 2} = I_if_c_square;
 I_if_square_cell{1, 3} = I_if_0c_square;
-I_if_square_cell{1, 4} = I_if_s_square;
+I_if_square_cell{1, 4} = I_if_1_square;
+I_if_square_cell{1, 5} = I_if_s_square;
 
 % Return E as a single scalar if consistent
 DeltaE = E(1);  
@@ -354,7 +434,7 @@ end
 
 
 % d->d
-function [I_if_square_cell, DeltaE, M] = DtoDtrans(Nin, Nfin, Min, Mfin, length)
+function [I_if_square_cell, DeltaE, M] = DtoDtrans(Nin, Nfin, Min, Mfin, length, spin)
 
 k = length;
 
@@ -420,10 +500,16 @@ for n = 2:k+1
     end
 end
 
-% Compute el spin average
-I_if_square = (I_if0.^2 + 2*I_if1.^2 + 2*I_if2.^2) / 5; % *2 because trans from +-1 to +-1 and from +-2 to +-2
-I_if_c_square = (I_if_c0.^2 + 2*I_if_c1.^2 + 2*I_if_c2.^2) / 5;
-I_if_0c_square = (I_if0.*I_if_c0 + 2*I_if1.*I_if_c1 + 2*I_if2.*I_if_c2) / 5;
+% Compute el spin average not done here
+if spin == 0
+    I_if_square = (I_if0.^2 + 2*I_if1.^2 + 2*I_if2.^2) / 5; % *2 because trans from +-1 to +-1 and from +-2 to +-2
+    I_if_c_square = (I_if_c0.^2 + 2*I_if_c1.^2 + 2*I_if_c2.^2) / 5;
+    I_if_0c_square = (I_if0.*I_if_c0 + 2*I_if1.*I_if_c1 + 2*I_if2.*I_if_c2) / 5;
+else
+    I_if_square = 0;
+    I_if_c_square = 0;
+    I_if_0c_square = 0;
+end
 
 % Store in cell array
 I_if_square_cell{1, 1} = I_if_square;
