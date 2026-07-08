@@ -85,7 +85,8 @@ end
 % parameters computed with mathematica:
 % Each row is a set: [Cm, CM, CE]  -> corresponds to [Cp, Cpp, Ce]
 
-%Param sets obtingut al resoldre el sistema d'equacions
+%Param sets obtingut al resoldre el sistema d'equacions al paper son
+%aquests dividits entre sqrt(4pi)
 param_sets = [
    -0.569395,  0.0413287,   0.0225432;
    -0.566654, -0.00973277,  0.0730556;

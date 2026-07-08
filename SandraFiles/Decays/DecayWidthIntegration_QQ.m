@@ -11,15 +11,15 @@ setm_q(m_b)
 
 %Change this depending on the transition
 
-ComputationIE = TransitionsAdded('QQStoS');  
+ComputationIE = TransitionsAdded('QQDtoS');  
 
 %spin
 s=0;
 
-[I_if_square_cell, DeltaE, M] = ComputationIE(4, 2, 0.28, 0.629, 50, s);
+[I_if_square_cell, DeltaE, M] = ComputationIE(3, 3, 0.28, 0.356, 50, s);
 
 
-file_name = 'QQbottom_4s-2s_integral_final.txt';
+file_name = 'QQbottom_3d-3s_integral_final.txt';
 
 %Obtain the I_if^2 from the cell
 I_if_square = I_if_square_cell{1,1};
