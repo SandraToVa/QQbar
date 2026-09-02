@@ -1,4 +1,4 @@
-# PhD scripts
+# Hyperfine splitting scripts
 Matlab scripts (quarkonium and hybrids)
 - **RubenFiles**: are not modified from the code that Joan gave me from Ruben
 - **SandraFiles**: the files that I have created
